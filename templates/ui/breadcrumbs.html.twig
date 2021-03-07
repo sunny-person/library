@@ -1,0 +1,10 @@
+<div class="breadcrumbs">
+    <a href="/">Главная</a>
+    {% if categories.child is not null %}
+        &#8658;
+        {% if categories.parent is not null %}
+            <a href="/?category={{ categories.parent.idCategory }}">{{ categories.parent.nameCategory }}</a> &#8658;
+        {% endif %}
+        <a href="/?category={{ categories.child.idCategory }}">{{ categories.child.nameCategory }}</a>
+    {% endif %}
+</div>

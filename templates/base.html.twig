@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Электронная библиотека{% endblock %}</title>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2" />
+        {% block stylesheets %} <link rel="stylesheet" href="{{ asset('css/style.css') }}"> {% endblock %}
+    </head>
+    <body>
+        <header>
+            {% include 'header.html.twig' %}
+        </header>
+        {% block body %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+        <footer>
+            {% include 'footer.html.twig' %}
+        </footer>
+    </body>
+</html>

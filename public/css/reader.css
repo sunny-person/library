@@ -1,0 +1,33 @@
+#the-canvas {
+    border: 2px solid lightgray;
+}
+
+#pdf_renderer{
+    border: 2px solid lightgray;
+    overflow: auto;
+    text-align: center;
+}
+
+canvas {
+   display: block;
+   margin: 0 auto;
+}
+#pdfcanvas {
+	display: block;
+	margin: 0;
+}
+
+html{
+    background-color: lightyellow;
+}
+
+.row{
+    background-color: lightyellow;
+}
+
+input[type=file] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 300px;
+}

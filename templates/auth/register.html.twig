@@ -1,0 +1,31 @@
+{% extends 'auth/base.html.twig' %}
+
+{% block title %} Авторизация и регистрация {% endblock %}
+
+{% block body %}
+
+    <form>
+        <label>ФИО</label>
+        <input type="text" name="full_name" placeholder="Введите свое полное имя">
+        <label>Логин</label>
+        <input type="text" name="login" placeholder="Введите свой логин">
+        <label>Почта</label>
+        <input type="email" name="email" placeholder="Введите адрес своей почты">
+        <label>Пароль</label>
+        <input type="password" name="password" placeholder="Введите пароль">
+        <label>Подтверждение пароля</label>
+        <input type="password" name="password_confirm" placeholder="Подтвердите пароль">
+        <button type="submit" class="register-btn">Зарегистрироваться</button>
+        <p>
+            У вас уже есть аккаунт? - <a href="{{ path('login') }}">авторизируйтесь</a>!
+        </p>
+
+        <p class="msg none"></p>
+    </form>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{  asset('js/auth.js') }}"></script>
+{% endblock %}

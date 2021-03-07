@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    <div id="leftCol">
+        {% if menu is not empty %}
+            <h1>Книги:</h1>
+            <div class="ul-menu">
+                <ul class="category">
+                    {% for id, item in menu %}
+                        <li>
+                            <a href="/?category={{ id|escape }}">{{ item.parent|escape }}</a>
+                            {% if item.children is defined %}
+                                <ul>
+                                    {% for childId, child in item.children %}
+                                        <li>
+                                            <a href="/?category={{ childId|escape }}">{{ child|escape }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    <article>
+        {% if breadcrumbs is not null %}
+            {{ breadcrumbs|raw }}
+        {% endif %}
+        {% if books is null or books is empty %}
+            <p>В данном разделе книги отсутствуют!</p>
+        {% else %}
+            {% for book in books %}
+
+                <div class="object">
+
+                    {% if user is defined and user is not null%}
+                    <div class="circle"><span class="title">
+			        <a href="{{  path('reader', { 'bookId': book.idBooks}) }}" target="_blank">
+                        {{ book.title|escape }} </a>
+	</span></div>
+                    {% endif %}
+
+                    <p class="object_string"><span class="oblique">Автор: </span>{{ book.author.nameAuthor|escape }}</p>
+                    <p class="object_string"><span class="oblique">Место расположения: </span><br>{{ book.url|escape }}</p>
+                    <p class="object_string"><span class="oblique">Страниц: </span>{{ book.page|escape }}</p>
+                    <p class="object_string"><span class="oblique">Год: </span>{{ book.year|escape }}</p>
+                    <p class="object_string"><span class="oblique">Город: </span>{{ book.city.city|escape }}</p>
+                    <p class="object_string"><span class="oblique">Издательство: </span>{{ book.publishingHouse.namePublishingHouse|escape }}</p>
+                    <p class="object_string"><span class="oblique">Вид издательства: </span>{{ book.typePh.nameTypePh|escape }}</p>
+                    <p class="object_string"><span class="oblique">Категория: </span>{{ book.parent.nameCategory|escape }}</p>
+
+                    {% if user is defined and user is not null %}
+                        {% if user.id_role == 1 %}
+                            <p class="object_string">
+                                <span class="oblique">
+                                    <h5 align="center" class="grow">
+                                        <a href="{{ path('edit_get', {'bookId': book.idBooks}) }}">
+                                            <img src="{{ asset('img/edit.png') }}" width="42" height="42"
+                                                style="right: 10px;position: inherit;vertical-align: top;" />
+                                        </a>
+                                    </h5>
+                                </span>
+                             </p>
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+            {% if pagination is not null %}
+                {{ pagination|raw }}
+            {% endif %}
+        {% endif %}
+    </article>
+    <br />
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{  asset('js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{  asset('js/jquery.accordion.js') }}"></script>
+    <script src="{{  asset('js/jquery.cookie.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $(".category").dcAccordion();
+        });
+    </script>
+
+{% endblock %}
