@@ -1,0 +1,22 @@
+
+    {% if menu is not empty %}
+        <h1>Книги:</h1>
+        <div class="ul-menu">
+            <ul class="category">
+                {% for id, item in menu %}
+                    <li>
+                        <a href="/?category={{ id|escape }}">{{ item.parent|escape }}</a>
+                        {% if item.children is defined %}
+                            <ul>
+                                {% for childId, child in item.children %}
+                                    <li>
+                                        <a href="/?category={{ childId|escape }}">{{ child|escape }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}

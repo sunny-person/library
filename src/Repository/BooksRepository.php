@@ -31,40 +31,7 @@ class BooksRepository extends EntityRepository {
         }
 
         foreach ($dbBooks as $dbBook) {
-            $book = new Books();
-            $book->setIdBooks($dbBook['id_books']);
-            $book->setTitle($dbBook['title']);
-            $book->setUrl($dbBook['URL']);
-            $book->setPage($dbBook['page']);
-            $book->setYear($dbBook['year']);
-
-            $author = new Author();
-            $author->setIdAuthor($dbBook['id_author']);
-            $author->setNameAuthor($dbBook['name_author']);
-            $book->setAuthor($author);
-
-            $parent = new Category();
-            $parent->setIdCategory($dbBook['id_category']);
-            $parent->setParent($dbBook['parent']);
-            $parent->setNameCategory($dbBook['name_category']);
-            $book->setParent($parent);
-
-            $publishingHouse = new PublishingHouse();
-            $publishingHouse->setIdPublishingHouse($dbBook['id_publishing_house']);
-            $publishingHouse->setNamePublishingHouse($dbBook['name_publishing_house']);
-            $book->setPublishingHouse($publishingHouse);
-
-            $typePh = new TypePh();
-            $typePh->setIdTypePh($dbBook['id_type_PH']);
-            $typePh->setNameTypePh($dbBook['name_type_ph']);
-            $book->setTypePh($typePh);
-
-            $city = new City();
-            $city->setIdCity($dbBook['id_city']);
-            $city->setCity($dbBook['city']);
-            $book->setCity($city);
-
-            $books[] = $book;
+            $books[] = $this->createBook($dbBook);
         }
 
         return $books;
@@ -134,41 +101,7 @@ class BooksRepository extends EntityRepository {
         }
 
         $dbBook = $statement->fetchAssociative();
-
-        $book = new Books();
-        $book->setIdBooks($dbBook['id_books']);
-        $book->setTitle($dbBook['title']);
-        $book->setUrl($dbBook['URL']);
-        $book->setPage($dbBook['page']);
-        $book->setYear($dbBook['year']);
-
-        $author = new Author();
-        $author->setIdAuthor($dbBook['id_author']);
-        $author->setNameAuthor($dbBook['name_author']);
-        $book->setAuthor($author);
-
-        $parent = new Category();
-        $parent->setIdCategory($dbBook['id_category']);
-        $parent->setParent($dbBook['parent']);
-        $parent->setNameCategory($dbBook['name_category']);
-        $book->setParent($parent);
-
-        $publishingHouse = new PublishingHouse();
-        $publishingHouse->setIdPublishingHouse($dbBook['id_publishing_house']);
-        $publishingHouse->setNamePublishingHouse($dbBook['name_publishing_house']);
-        $book->setPublishingHouse($publishingHouse);
-
-        $typePh = new TypePh();
-        $typePh->setIdTypePh($dbBook['id_type_PH']);
-        $typePh->setNameTypePh($dbBook['name_type_ph']);
-        $book->setTypePh($typePh);
-
-        $city = new City();
-        $city->setIdCity($dbBook['id_city']);
-        $city->setCity($dbBook['city']);
-        $book->setCity($city);
-
-        return $book;
+        return $this->createBook($dbBook);
     }
 
     /**
@@ -180,6 +113,7 @@ class BooksRepository extends EntityRepository {
     public function addBook(Books $book): bool{
         $query = "INSERT INTO books SET
                  `title` = ?,
+                 `description` = ?,
                  `id_author` = ?,
                  `URL` = ?,
                  `page` = ?,
@@ -191,14 +125,15 @@ class BooksRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $book->getTitle());
-        $statement->bindValue(2, $book->getAuthor());
-        $statement->bindValue(3, $book->getUrl());
-        $statement->bindValue(4, $book->getPage());
-        $statement->bindValue(5, $book->getYear());
-        $statement->bindValue(6, $book->getPublishingHouse());
-        $statement->bindValue(7, $book->getTypePh());
-        $statement->bindValue(8, $book->getCity());
-        $statement->bindValue(9, $book->getParent());
+        $statement->bindValue(2, $book->getDescription());
+        $statement->bindValue(3, $book->getAuthor());
+        $statement->bindValue(4, $book->getUrl());
+        $statement->bindValue(5, $book->getPage());
+        $statement->bindValue(6, $book->getYear());
+        $statement->bindValue(7, $book->getPublishingHouse());
+        $statement->bindValue(8, $book->getTypePh());
+        $statement->bindValue(9, $book->getCity());
+        $statement->bindValue(10, $book->getParent());
 
         return $statement->execute();
     }
@@ -212,6 +147,7 @@ class BooksRepository extends EntityRepository {
     public function updateBook(Books $book): bool {
         $query = "UPDATE books SET
                  `title` = ?,
+                 `description` = ?,
                  `id_author` = ?,
                  `URL` = ?,
                  `page` = ?,
@@ -224,15 +160,16 @@ class BooksRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $book->getTitle());
-        $statement->bindValue(2, $book->getAuthor()->getIdAuthor());
-        $statement->bindValue(3, $book->getUrl());
-        $statement->bindValue(4, $book->getPage());
-        $statement->bindValue(5, $book->getYear());
-        $statement->bindValue(6, $book->getPublishingHouse()->getIdPublishingHouse());
-        $statement->bindValue(7, $book->getTypePh()->getIdTypePh());
-        $statement->bindValue(8, $book->getCity()->getIdCity());
-        $statement->bindValue(9, $book->getParent()->getIdCategory());
-        $statement->bindValue(10, $book->getIdBooks());
+        $statement->bindValue(2, $book->getDescription());
+        $statement->bindValue(3, $book->getAuthor()->getIdAuthor());
+        $statement->bindValue(4, $book->getUrl());
+        $statement->bindValue(5, $book->getPage());
+        $statement->bindValue(6, $book->getYear());
+        $statement->bindValue(7, $book->getPublishingHouse()->getIdPublishingHouse());
+        $statement->bindValue(8, $book->getTypePh()->getIdTypePh());
+        $statement->bindValue(9, $book->getCity()->getIdCity());
+        $statement->bindValue(10, $book->getParent()->getIdCategory());
+        $statement->bindValue(11, $book->getIdBooks());
 
         return $statement->execute();
     }
@@ -279,6 +216,71 @@ class BooksRepository extends EntityRepository {
         $statement->execute();
 
         return (int) $statement->fetchOne();
+    }
+
+    /**
+     * @param string $find
+     * @return Books[]
+     */
+    public function searchBooks(string $find): array {
+        $query = "SELECT * FROM books
+            INNER JOIN category on category.id_category = books.parent
+            INNER JOIN author on author.id_author = books.id_author
+            INNER JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
+            INNER JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
+            INNER JOIN city on city.id_city = books.id_city
+            WHERE books.title LIKE :q OR author.name_author LIKE :q OR type_ph.name_type_ph LIKE :q
+            ORDER BY books.title LIMIT 30";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue('q', "%$find%");
+        $statement->execute();
+
+        $dbBooks = $statement->fetchAllAssociative();
+        $books = array();
+        foreach ($dbBooks as $dbBook) {
+            $books[] = $this->createBook($dbBook);
+        }
+
+        return $books;
+    }
+
+    private function createBook(array $dbBook): Books {
+        $book = new Books();
+        $book->setIdBooks($dbBook['id_books']);
+        $book->setTitle($dbBook['title']);
+        $book->setDescription($dbBook['description']);
+        $book->setUrl($dbBook['URL']);
+        $book->setPage($dbBook['page']);
+        $book->setYear($dbBook['year']);
+
+        $author = new Author();
+        $author->setIdAuthor($dbBook['id_author']);
+        $author->setNameAuthor($dbBook['name_author']);
+        $book->setAuthor($author);
+
+        $parent = new Category();
+        $parent->setIdCategory($dbBook['id_category']);
+        $parent->setParent($dbBook['parent']);
+        $parent->setNameCategory($dbBook['name_category']);
+        $book->setParent($parent);
+
+        $publishingHouse = new PublishingHouse();
+        $publishingHouse->setIdPublishingHouse($dbBook['id_publishing_house']);
+        $publishingHouse->setNamePublishingHouse($dbBook['name_publishing_house']);
+        $book->setPublishingHouse($publishingHouse);
+
+        $typePh = new TypePh();
+        $typePh->setIdTypePh($dbBook['id_type_PH']);
+        $typePh->setNameTypePh($dbBook['name_type_ph']);
+        $book->setTypePh($typePh);
+
+        $city = new City();
+        $city->setIdCity($dbBook['id_city']);
+        $city->setCity($dbBook['city']);
+        $book->setCity($city);
+
+        return $book;
     }
 
 }

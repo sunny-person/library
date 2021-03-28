@@ -22,6 +22,7 @@ class Books
      */
     private $idBooks;
     private $title;
+    private $description;
     private $author;
     private $url;
     private $page;
@@ -61,6 +62,20 @@ class Books
     public function setTitle($title): void
     {
         $this->title = $title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description): void {
+        $this->description = $description;
     }
 
     /**
@@ -190,4 +205,5 @@ class Books
     {
         $this->year = $year;
     }
+
 }

@@ -98,6 +98,7 @@ class BookController extends AbstractController {
         }
 
         $title = $request->get('title');
+        $description = $request->get('description');
         $file = $request->files->get('URL');
 
         if ($file !== null){
@@ -127,6 +128,16 @@ class BookController extends AbstractController {
             $book->setUrl($url);
         }
 
+        if (!empty($url)) {
+            $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR . $url;
+            $moveResult = move_uploaded_file($file->getPathname(), $uploadFileName);
+            if ($moveResult === false) {
+                return new RedirectResponse(
+                    "/book/edit/${bookId}?errorMessage=Не%20удалось%20обновить%20файл%20книги"
+                );
+            }
+        }
+
         $page = $request->get('page');
         $year = $request->get('year');
         $authorId = $request->get('name_author');
@@ -136,6 +147,7 @@ class BookController extends AbstractController {
         $categoryId = $request->get('category');
 
         $book->setTitle($title);
+        $book->setDescription($description);
         $book->setPage($page);
         $book->setYear($year);
         $book->getAuthor()->setIdAuthor($authorId);
@@ -146,9 +158,10 @@ class BookController extends AbstractController {
 
         $result = $this->getDoctrine()->getRepository(Books::class)->updateBook($book);
 
-        if ($result && !empty($url)) {
-            $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR . $url;
-            move_uploaded_file($file->getPathname(), $uploadFileName);
+        if (!$request) {
+            return new RedirectResponse(
+                "/book/edit/${bookId}?errorMessage=Не%20удалось%20обновить%20книгу"
+            );
         }
 
         return new RedirectResponse(
@@ -203,6 +216,7 @@ class BookController extends AbstractController {
             $book = new Books();
 
             $title = $request->get('title');
+            $description= $request->get('description');
             $file = $request->files->get('URL');
 
             if ($file !== null){
@@ -236,6 +250,16 @@ class BookController extends AbstractController {
                 $book->setUrl($url);
             }
 
+            if (!empty($url)) {
+                $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR . $url;
+                $moveResult = move_uploaded_file($file->getPathname(), $uploadFileName);
+                if (!$moveResult) {
+                    return new RedirectResponse(
+                        "/book/add?errorMessage=Не%20удалось%20загрузить%20документ%20книги"
+                    );
+                }
+            }
+
             $page = $request->get('page');
             $year = $request->get('year');
             $authorId = $request->get('name_author');
@@ -245,6 +269,7 @@ class BookController extends AbstractController {
             $categoryId = $request->get('category');
 
             $book->setTitle($title);
+            $book->setDescription($description);
             $book->setPage($page);
             $book->setYear($year);
             $book->setAuthor($authorId);
@@ -255,9 +280,10 @@ class BookController extends AbstractController {
 
             $result = $this->getDoctrine()->getRepository(Books::class)->addBook($book);
 
-            if ($result && !empty($url)) {
-                $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR . $url;
-                move_uploaded_file($file->getPathname(), $uploadFileName);
+            if (!$result) {
+                return new RedirectResponse(
+                    "/book/add?errorMessage=Не%20удалось%20добавить%20книгу"
+                );
             }
 
             return new RedirectResponse(

@@ -37,18 +37,6 @@ class HomeController extends AbstractController {
             $requestCategory, $pagination->getOffset(), $pagination->getLimit()
         );
 
-        $categories = $this->getDoctrine()->getRepository(Category::class)->getCategories();
-        $menu = array();
-        /** @var Category $category */
-        foreach ($categories as $category) {
-            if ((int) $category->getParent() === 0) {
-                $menu[$category->getIdCategory()]['parent'] = $category->getNameCategory();
-                continue;
-            }
-
-            $menu[$category->getParent()]['children'][$category->getIdCategory()] = $category->getNameCategory();
-        }
-
         $user = $request->getSession()->get('user');
 
         $breadCrumbs = null;
@@ -82,7 +70,6 @@ class HomeController extends AbstractController {
             'home/index.html.twig',
             array(
                 'books' => $books,
-                'menu' => $menu,
                 'user' => $user,
                 'breadcrumbs' => $breadCrumbs,
                 'pagination' => $pageNavigation

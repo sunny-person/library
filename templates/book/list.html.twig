@@ -1,0 +1,38 @@
+{% for book in books %}
+    <div class="object">
+        {% if user is defined and user is not null%}
+            <div class="circle"><span class="title">
+    <a href="{{  path('reader', { 'bookId': book.idBooks}) }}" target="_blank">
+        {{ book.title|escape }} </a>
+            </span></div>
+        {% endif %}
+
+
+        <p class="object_string"><span class="oblique">Описание: </span>{{ book.description|escape }}</p>
+
+        <p class="object_string"><span class="oblique">Автор: </span>{{ book.author.nameAuthor|escape }}</p>
+        <p class="object_string"><span class="oblique">Место расположения: </span><br>{{ book.url|escape }}</p>
+        <p class="object_string"><span class="oblique">Страниц: </span>{{ book.page|escape }}</p>
+        <p class="object_string"><span class="oblique">Год: </span>{{ book.year|escape }}</p>
+        <p class="object_string"><span class="oblique">Город: </span>{{ book.city.city|escape }}</p>
+        <p class="object_string"><span class="oblique">Издательство: </span>{{ book.publishingHouse.namePublishingHouse|escape }}</p>
+        <p class="object_string"><span class="oblique">Вид издательства: </span>{{ book.typePh.nameTypePh|escape }}</p>
+        <p class="object_string"><span class="oblique">Категория: </span>{{ book.parent.nameCategory|escape }}</p>
+
+        {% if user is defined and user is not null %}
+            {% if user.id_role == 1 %}
+                <p class="object_string">
+                <span class="oblique">
+                    <h5 align="center" class="grow">
+                        <a href="{{ path('edit_get', {'bookId': book.idBooks}) }}">
+                            <img src="{{ asset('img/edit.png') }}" width="42" height="42"
+                                 style="right: 10px;position: inherit;vertical-align: top;" />
+                        </a>
+                    </h5>
+                </span>
+                </p>
+            {% endif %}
+        {% endif %}
+
+    </div>
+{% endfor %}
