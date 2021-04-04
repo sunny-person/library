@@ -42,7 +42,7 @@ class BooksRepository extends EntityRepository {
         $query =
             "SELECT * FROM books
             INNER JOIN category on category.id_category = books.parent
-            INNER JOIN author on author.id_author = books.id_author
+            LEFT JOIN author on author.id_author = books.id_author
             INNER JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
             INNER JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
             INNER JOIN city on city.id_city = books.id_city

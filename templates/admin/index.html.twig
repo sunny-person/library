@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="pageAdd">
+
+        <h2>Редактирование</h2>
+        <div class="tab-wrapper">
+
+        <ul class="tab-menu">
+            <li class="action">Авторы</li>
+            <li>Категории</li>
+            <li>Города</li>
+            <li>Издательские дома</li>
+            <li>Типы книг</li>
+        </ul>
+
+            <div class="tab-content">
+                <div class="group">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Имя</th>
+                                <th scope="col">Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% if authors is defined and authors is not null %}
+                            {% for author in authors %}
+                                <tr>
+                                    <th scope="row">{{ author.idAuthor }}</th>
+                                    <td>{{ author.nameAuthor }}</td>
+                                    <td><a href="{{ path('author_edit', {'authorId': author.idAuthor}) }}" class="btn edit-btn">Редактировать</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="group">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Название</th>
+                            <th scope="col">Родительская категория</th>
+                            <th scope="col">Действие</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if categories is defined and categories is not null %}
+                            {% for category in categories %}
+                                <tr>
+                                    <th scope="row">{{ category.idCategory }}</th>
+                                    <td>{{ category.nameCategory }}</td>
+                                    <td>{{ category.parent }}</td>
+                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="group">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Название</th>
+                            <th scope="col">Действие</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if cities is defined and cities is not null %}
+                            {% for city in cities %}
+                                <tr>
+                                    <th scope="row">{{ city.idCity }}</th>
+                                    <td>{{ city.city }}</td>
+                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="group">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Название</th>
+                            <th scope="col">Действие</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if publishingHouses is defined and publishingHouses is not null %}
+                            {% for ph in publishingHouses %}
+                                <tr>
+                                    <th scope="row">{{ ph.idPublishingHouse }}</th>
+                                    <td>{{ ph.namePublishingHouse }}</td>
+                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="group">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Название</th>
+                            <th scope="col">Действие</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if phTypes is defined and phTypes is not null %}
+                            {% for phType in phTypes %}
+                                <tr>
+                                    <th scope="row">{{ phType.idTypePh }}</th>
+                                    <td>{{ phType.nameTypePh }}</td>
+                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    {% block javascripts %}
+        <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+        <script src="{{ asset('js/script.js') }}"></script>
+    {% endblock %}
+
+</div>
+{% endblock %}

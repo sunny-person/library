@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        {% if error_message is defined and error_message is not null %}
+            <span class="text-danger">{{ error_message|escape }}</span>
+        {% endif %}
+        {% if author is defined and author is not null %}
+            <form method = "POST" action= "{{ path('author_edit_post', {'authorId': author.idAuthor}) }}" class="frm">
+                <div class="group">
+                    <label for="name"> ФИО Автора: </label>
+                    <br><br>
+                    <input type="text" name="name_author" value="{{ author.nameAuthor|escape }}" placeholder=""/>
+                    <span class="highlight"></span><span class="bar"></span>
+                </div>
+                <input type="submit" id="add_author" name="add_author" value="Редактировать" class="button buttonBlue">
+            </form>
+            <a href="{{ path('author_delete', {'authorId': author.idAuthor}) }}" class="button buttonBluedel">Удалить автора</a>
+            <!-- btn btn-edit->
+        {% endif %}
+    </div>
+{% endblock %}

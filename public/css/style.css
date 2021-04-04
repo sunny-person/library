@@ -56,8 +56,12 @@ header {
     margin-bottom: 20px;
 }
 
-.search-btn {
+.search-btn, .edit-btn {
     background:#B04E5EFF;
+    color: #fff;
+}
+
+.edit-btn:hover {
     color: #fff;
 }
 
