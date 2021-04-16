@@ -3,9 +3,6 @@
     <div class="navigation">
         <a href="/"> <div class="menu">Главная </div> </a>
         {% if user is defined and user is not null %}
-            {% if user.id_role == 1 %}
-                <a href="{{ path('add_get') }}"> <div class="menu">Добавление </div> </a>
-            {% endif %}
             <a href="{{ path('logout') }}" class="logout"><div class="menu">Выход</div></a>
             <h3 style="margin: 10px 0; color:white;">{{ user.full_name }}</h3>
         {% else %}

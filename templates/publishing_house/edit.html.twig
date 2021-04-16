@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        {% if error_message is defined and error_message is not null %}
+            <span class="text-danger">{{ error_message|escape }}</span>
+        {% endif %}
+        {% if publishing_house is defined and publishing_house is not null %}
+            <form method = "POST" action= "{{ path('publishing_house_edit_post', {'publishingHouseId': publishing_house.idPublishingHouse}) }}" class="frm">
+                <div class="group">
+                    <label for="name"> Название издательского дома: </label>
+                    <br><br>
+                    <input type="text" name="name_publishing_house" value="{{ publishing_house.namePublishingHouse|escape }}" placeholder=""/>
+                    <span class="highlight"></span><span class="bar"></span>
+                </div>
+                <input type="submit" id="add_publishing_house" name="add_publishing_house" value="Редактировать" class="button buttonBlue">
+            </form>
+            <a href="{{ path('publishing_house_delete', {'publishingHouseId': publishing_house.idPublishingHouse}) }}" class="button buttonBluedel">Удалить автора</a>
+        {% endif %}
+    </div>
+{% endblock %}

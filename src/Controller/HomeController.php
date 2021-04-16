@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Books;
 use App\Entity\Category;
+use App\Entity\FavoriteBook;
 use App\UI\Pagination;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +39,15 @@ class HomeController extends AbstractController {
         );
 
         $user = $request->getSession()->get('user');
+
+        $favoriteBooks = array();
+        if (isset($user)) {
+            $favoriteBooks = $this->getDoctrine()->getRepository(FavoriteBook::class)->getUserEntries($user['id_users']);
+            /** @var FavoriteBook $entry */
+            $favoriteBooks = array_map(function ($entry) {
+                return $entry->getBookId();
+            }, $favoriteBooks);
+        }
 
         $breadCrumbs = null;
         if (isset($requestCategory)) {
@@ -72,7 +82,8 @@ class HomeController extends AbstractController {
                 'books' => $books,
                 'user' => $user,
                 'breadcrumbs' => $breadCrumbs,
-                'pagination' => $pageNavigation
+                'pagination' => $pageNavigation,
+                'favoriteBooks' => $favoriteBooks
             )
         );
     }

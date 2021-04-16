@@ -680,3 +680,36 @@ form #auth{
 .logout {
     color: #b7625c;
 }
+
+.admin-actions {
+    display: flex;
+    flex-direction: column;
+
+    width: 195px;
+}
+
+.admin-actions__action {
+    width: 100%;
+
+    margin-top: 5px;
+}
+
+.admin-actions__action .btn {
+    width: 100%;
+}
+
+.book-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.favorite-flag {
+    width: 42px;
+}
+
+.favorite-flag__value {
+    cursor: pointer;
+    border: 1px solid #ddd;
+    font-size: 30px;
+}

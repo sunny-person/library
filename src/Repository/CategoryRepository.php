@@ -5,7 +5,9 @@ namespace App\Repository;
 
 
 use App\Entity\Category;
+use App\Repository\Exceptions\CategoryRepositoryException;
 use Doctrine\ORM\EntityRepository;
+use Exception;
 
 class CategoryRepository extends EntityRepository {
 
@@ -101,6 +103,69 @@ class CategoryRepository extends EntityRepository {
         $statement->bindValue(2, $category->getParent());
 
         return $statement->execute();
+    }
+
+    public function getCategory(int $categoryId): Category {
+        $query = "SELECT * FROM category WHERE id_category = ?";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $categoryId);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            throw new \InvalidArgumentException('Category with such id not found!', 0);
+        }
+
+        $dbCategory = $statement->fetchAssociative();
+
+        $category = new Category();
+        $category->setIdCategory($dbCategory['id_category']);
+        $category->setNameCategory($dbCategory['name_category']);
+        $category->setParent($dbCategory['parent']);
+
+        return $category;
+    }
+
+    /**
+     * @param Category $category
+     * @return bool
+     * @throws CategoryRepositoryException
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function updateCategory(Category $category): bool {
+        $query = "UPDATE category SET name_category = :name, parent = :parent WHERE id_category = :id";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue('name', $category->getNameCategory());
+        $statement->bindValue('parent', $category->getParent());
+        $statement->bindValue('id', $category->getIdCategory());
+
+        try {
+            return $statement->execute();
+        } catch (Exception $e) {
+            $errorMessage = 'Не удалось обновить категорию.';
+            throw new CategoryRepositoryException($errorMessage, 0, $e);
+        }
+    }
+
+    /**
+     * @param Category $category
+     * @return bool
+     * @throws CategoryRepositoryException
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function deleteCategory(Category $category): bool {
+        $query = "DELETE FROM category WHERE id_category = ?";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $category->getIdCategory());
+
+        try {
+            return $statement->execute();
+        } catch (Exception $e) {
+            $errorMessage = 'Не удалось обновить категорию.';
+            throw new CategoryRepositoryException($errorMessage, 1, $e);
+        }
     }
 
 }

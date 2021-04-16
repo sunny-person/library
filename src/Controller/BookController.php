@@ -8,9 +8,14 @@ use App\Entity\Author;
 use App\Entity\Books;
 use App\Entity\Category;
 use App\Entity\City;
+use App\Entity\FavoriteBook;
 use App\Entity\PublishingHouse;
 use App\Entity\TypePh;
+use App\Repository\FavoriteBooksRepository;
+use Exception;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +24,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 
 class BookController extends AbstractController {
+
+    private const ADMIN_ROLE_ID = 1;
 
     /** @var SessionInterface $session */
     private $session;
@@ -43,6 +50,11 @@ class BookController extends AbstractController {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
+        }
+
+        $userRole = (int) $user['id_role'];
+        if ($userRole !== self::ADMIN_ROLE_ID) {
+            return new RedirectResponse('/');
         }
 
         $book = $this->getDoctrine()->getRepository(Books::class)->getBook($bookId);
@@ -76,6 +88,11 @@ class BookController extends AbstractController {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
+        }
+
+        $userRole = (int) $user['id_role'];
+        if ($userRole !== self::ADMIN_ROLE_ID) {
+            return new RedirectResponse('/');
         }
 
         /** @var Books $book */
@@ -180,6 +197,11 @@ class BookController extends AbstractController {
             return new RedirectResponse('/auth/sign');
         }
 
+        $userRole = (int) $user['id_role'];
+        if ($userRole !== self::ADMIN_ROLE_ID) {
+            return new RedirectResponse('/');
+        }
+
         $authors = $this->getDoctrine()->getRepository(Author::class)->getAuthors();
         $cities = $this->getDoctrine()->getRepository(City::class)->getCities();
         $publishingHouses = $this->getDoctrine()->getRepository(PublishingHouse::class)->getPublishingHouses();
@@ -208,6 +230,11 @@ class BookController extends AbstractController {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
+        }
+
+        $userRole = (int) $user['id_role'];
+        if ($userRole !== self::ADMIN_ROLE_ID) {
+            return new RedirectResponse('/');
         }
 
         $addBook = $request->get('add_book');
@@ -333,6 +360,7 @@ class BookController extends AbstractController {
         if (isset($addTypePh)) {
             $typePh = new TypePh();
             $name = $request->get('type_ph');
+            $typePh->setNameTypePh($name);
             $result=$this->getDoctrine()->getRepository(TypePh::class)->addTypePh($typePh);
 
             if(!$result) {
@@ -385,5 +413,121 @@ class BookController extends AbstractController {
                 "/book/add?errorMessage=Автор%20успешно%20добавлен"
             );
         }
+    }
+
+    /**
+     * @Route("/book/favorites/add", methods={"POST"}, name="book_favorites_add")
+     */
+    public function addToFavorite(): Response {
+        $user = $this->session->get('user');
+        if (!isset($user)) {
+            return new RedirectResponse('/auth/sign');
+        }
+
+        try {
+            /** @var FavoriteBooksRepository $fbr */
+            $fbr = $this->getDoctrine()->getRepository(FavoriteBook::class);
+
+            $request = file_get_contents('php://input');
+
+            $fbData = json_decode($request, true);
+            $bookId = $fbData['bookId'];
+            $userId = $fbData['userId'];
+            if (!isset($bookId) || !isset($userId)) {
+                return new Response('Не был передан один из необходимых аргументов: book_id, user_id', 500);
+            }
+
+            $fb = new FavoriteBook();
+            $fb->setUserId($userId);
+            $fb->setBookId($bookId);
+
+            $result = $fbr->addEntry($fb);
+
+            if (!$result) {
+                throw new RuntimeException();
+            }
+
+            return new JsonResponse(array('success' => true));
+        } catch (Exception $e) {
+            return new Response('При добавлении книги в список избранных произошла ошибка.', 500);
+        }
+    }
+
+    /**
+     * @Route("/book/favorites/remove", methods={"POST"}, name="book_favorites_remove")
+     */
+    public function removeToFavorite(): Response {
+        $user = $this->session->get('user');
+        if (!isset($user)) {
+            return new RedirectResponse('/auth/sign');
+        }
+
+        try {
+            /** @var FavoriteBooksRepository $fbr */
+            $fbr = $this->getDoctrine()->getRepository(FavoriteBook::class);
+
+            $request = file_get_contents('php://input');
+
+            $fbData = json_decode($request, true);
+            $bookId = $fbData['bookId'];
+            $userId = $fbData['userId'];
+            if (!isset($bookId) || !isset($userId)) {
+                return new Response('Не был передан один из необходимых аргументов: book_id, user_id', 500);
+            }
+
+            $fb = new FavoriteBook();
+            $fb->setUserId($userId);
+            $fb->setBookId($bookId);
+
+            $result = $fbr->deleteEntry($fb);
+
+            if (!$result) {
+                throw new RuntimeException();
+            }
+
+            return new JsonResponse(array('success' => true));
+        } catch (Exception $e) {
+            return new Response('При удалении книги из списка избранных произошла ошибка.', 500);
+        }
+    }
+
+    /**
+     * @Route("/book_favorites", name="book_favorites")
+     */
+    public function getUserBooks(): Response { 
+        $user = $this->session->get('user');
+        if (!isset($user)) {
+            return new RedirectResponse('/auth/sign');
+        }
+
+        $notFoundMessage = 'В список избранных книг ничего не добавлено!';
+
+        $books = $this->getDoctrine()->getRepository(Books::class)->getBooks();
+
+        $favoriteBooks = array();
+        $favoriteBooks = $this->getDoctrine()->getRepository(FavoriteBook::class)->getUserEntries($user['id_users']);
+        /** @var FavoriteBook $entry */
+        $favoriteBooks = array_map(function ($entry) {
+            return $entry->getBookId();
+        }, $favoriteBooks);
+
+        if (empty($favoriteBooks)) {
+            return $this->render(
+                'book/favoritesbooks.html.twig',
+                array(
+                    'message' => $notFoundMessage,
+                    'user' => $user
+                )
+            );
+        }
+
+        return $this->render(
+            'book/favoritesbooks.html.twig',
+            array(
+                'favorite_books' => $favoriteBooks,
+                'books' => $books,
+                'user' => $user
+            )
+        );
     }
 }

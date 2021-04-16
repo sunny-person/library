@@ -3,7 +3,6 @@
 
 namespace App\Repository;
 
-
 use App\Entity\PublishingHouse;
 use Doctrine\ORM\EntityRepository;
 
@@ -42,6 +41,45 @@ class PublishingHouseRepository extends EntityRepository {
 
         $statement=$this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $publishingHouse->getNamePublishingHouse());
+
+        return $statement->execute();
+    }
+
+    public function getPublishingHouse($publishingHouseId): PublishingHouse{
+        $query = "SELECT * FROM publishing_house WHERE id_publishing_house = ?";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $publishingHouseId);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            throw new InvalidArgumentException('Publishing House not found!', 0);
+        }
+
+        $dbPublishingHouse = $statement->fetchAssociative();
+
+        $publishing_house = new PublishingHouse();
+        $publishing_house->setIdPublishingHouse($dbPublishingHouse['id_publishing_house']);
+        $publishing_house->setNamePublishingHouse($dbPublishingHouse['name_publishing_house']);
+
+        return $publishing_house;
+    }
+
+    public function updatePublishingHouse(PublishingHouse $publishingHouse): bool {
+        $query = 'UPDATE publishing_house SET name_publishing_house = :name WHERE id_publishing_house = :id';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue('name', $publishingHouse->getNamePublishingHouse());
+        $statement->bindValue('id', $publishingHouse->getIdPublishingHouse());
+
+        return $statement->execute();
+    }
+
+    public function deletePublishingHouse(PublishingHouse $publishingHouse): bool {
+        $query = 'DELETE FROM publishing_house WHERE id_publishing_house = ?';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $publishingHouse->getIdPublishingHouse());
 
         return $statement->execute();
     }

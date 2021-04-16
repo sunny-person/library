@@ -31,4 +31,52 @@ class PhTypesRepository extends EntityRepository {
         return $phTypes;
     }
 
+    public function addTypePh(TypePh $typePh): bool {
+        $query = 'INSERT INTO type_ph SET name_type_ph = :name';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue('name', $typePh->getNameTypePh());
+
+        return $statement->execute();
+    }
+
+    public function getPHType(int $id): TypePh {
+        $query = "SELECT * FROM type_ph WHERE `id_type_ph` = ?";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $id);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            throw new InvalidArgumentException('TypePH not found!', 0);
+        }
+
+        $dbTypePh = $statement->fetchAssociative();
+
+        $typePh = new TypePh();
+        $typePh->setIdTypePh($dbTypePh['id_type_ph']);
+        $typePh->setNameTypePh($dbTypePh['name_type_ph']);
+
+        return $typePh;
+    }
+
+
+    public function updateTypePh(TypePh $typePh): bool {
+        $query = 'UPDATE type_ph SET name_type_ph = :name WHERE id_type_ph = :id';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue('name', $typePh->getNameTypePh());
+        $statement->bindValue('id', $typePh->getIdTypePh());
+
+        return $statement->execute();
+    }
+
+    public function deleteTypePh(TypePh $typePh): bool {
+        $query = 'DELETE FROM type_ph WHERE id_type_ph = ?';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $typePh->getIdTypePh());
+
+        return $statement->execute();
+    }
 }

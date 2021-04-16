@@ -22,6 +22,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController {
 
+    private const ADMIN_ROLE_ID = 1;
+
     /** @var SessionInterface $session */
     private $session;
     /** @var AuthorRepository $authorRepository */
@@ -46,6 +48,11 @@ class AdminController extends AbstractController {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
+        }
+
+        $userRole = (int) $user['id_role'];
+        if ($userRole !== self::ADMIN_ROLE_ID) {
+            return new RedirectResponse('/');
         }
 
         $this->loadRepositories();

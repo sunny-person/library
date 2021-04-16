@@ -41,11 +41,11 @@ class BooksRepository extends EntityRepository {
         $connection = $this->getEntityManager()->getConnection();
         $query =
             "SELECT * FROM books
-            INNER JOIN category on category.id_category = books.parent
+            LEFT JOIN category on category.id_category = books.parent
             LEFT JOIN author on author.id_author = books.id_author
-            INNER JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
-            INNER JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
-            INNER JOIN city on city.id_city = books.id_city
+            LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
+            LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
+            LEFT JOIN city on city.id_city = books.id_city
             ORDER BY title LIMIT ?, ?
             ";
 
@@ -67,11 +67,11 @@ class BooksRepository extends EntityRepository {
      */
     private function getBooksByCategory(int $category): array {
         $query = "SELECT * FROM books
-            INNER JOIN category on category.id_category = books.parent
-            INNER JOIN author on author.id_author = books.id_author
-            INNER JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
-            INNER JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
-            INNER JOIN city on city.id_city = books.id_city
+            LEFT JOIN category on category.id_category = books.parent
+            LEFT JOIN author on author.id_author = books.id_author
+            LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
+            LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
+            LEFT JOIN city on city.id_city = books.id_city
             WHERE books.parent = :cat OR category.parent = :cat
             ORDER BY title";
 
@@ -85,11 +85,11 @@ class BooksRepository extends EntityRepository {
     public function getBook(int $id): ?Books {
         $connection = $this->getEntityManager()->getConnection();
         $query = "SELECT * FROM books
-            INNER JOIN category on category.id_category = books.parent
-            INNER JOIN author on author.id_author = books.id_author
-            INNER JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
-            INNER JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
-            INNER JOIN city on city.id_city = books.id_city
+            LEFT JOIN category on category.id_category = books.parent
+            LEFT JOIN author on author.id_author = books.id_author
+            LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
+            LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
+            LEFT JOIN city on city.id_city = books.id_city
             WHERE id_books = ?
             ORDER BY title";
         $statement = $connection->prepare($query);
@@ -224,11 +224,11 @@ class BooksRepository extends EntityRepository {
      */
     public function searchBooks(string $find): array {
         $query = "SELECT * FROM books
-            INNER JOIN category on category.id_category = books.parent
-            INNER JOIN author on author.id_author = books.id_author
-            INNER JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
-            INNER JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
-            INNER JOIN city on city.id_city = books.id_city
+            LEFT JOIN category on category.id_category = books.parent
+            LEFT JOIN author on author.id_author = books.id_author
+            LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
+            LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
+            LEFT JOIN city on city.id_city = books.id_city
             WHERE books.title LIKE :q OR author.name_author LIKE :q OR type_ph.name_type_ph LIKE :q
             ORDER BY books.title LIMIT 30";
 

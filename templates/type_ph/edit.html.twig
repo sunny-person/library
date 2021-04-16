@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        {% if error_message is defined and error_message is not null %}
+            <span class="text-danger">{{ error_message|escape }}</span>
+        {% endif %}
+        {% if type_ph is defined and type_ph is not null %}
+            <form method = "POST" action= "{{ path('type_ph_edit_post', {'typePhId': type_ph.idTypePh}) }}" class="frm">
+                <div class="group">
+                    <label for="name"> Название типа документа: </label>
+                    <br><br>
+                    <input type="text" name="name_type_ph" value="{{ type_ph.nameTypePh|escape }}" placeholder=""/>
+                    <span class="highlight"></span><span class="bar"></span>
+                </div>
+                <input type="submit" id="add_type_ph" name="add_type_ph" value="Редактировать" class="button buttonBlue">
+            </form>
+            <a href="{{ path('type_ph_delete', {'typePhId': type_ph.idTypePh}) }}" class="button buttonBluedel">Удалить автора</a>
+        {% endif %}
+    </div>
+{% endblock %}

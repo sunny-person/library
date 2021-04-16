@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        {% if error_message is defined and error_message is not null %}
+            <span class="text-danger">{{ error_message|escape }}</span>
+        {% endif %}
+        {% if city is defined and city is not null %}
+            <form method = "POST" action= "{{ path('city_edit_post', {'cityId': city.idCity}) }}" class="frm">
+                <div class="group">
+                    <label for="name"> Название города: </label>
+                    <br><br>
+                    <input type="text" name="city" value="{{ city.city|escape }}" placeholder=""/>
+                    <span class="highlight"></span><span class="bar"></span>
+                </div>
+                <input type="submit" id="add_city" name="add_city" value="Редактировать" class="button buttonBlue">
+            </form>
+            <a href="{{ path('city_delete', {'cityId': city.idCity}) }}" class="button buttonBluedel">Удалить автора</a>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div id="leftCol">
+        {{ render('/menu/categories') }}
+    </div>
+    <div class="container">
+        {% if message is defined and message is not null %}
+            <span>{{ message|escape }}</span>
+        {% endif %}
+        {% if favorite_books is defined and favorite_books is not null and favorite_books is not empty %}
+            <article>
+                {% for book in books %}
+                    {% if book.idBooks in favorite_books %}
+                        <div class="object">
+                            <div class="circle"><span class="title">
+                                <a href="{{  path('reader', { 'bookId': book.idBooks}) }}" target="_blank">
+                                    {{ book.title|escape }} </a>
+                                        </span></div>
+
+
+                            <p class="object_string"><span class="oblique">Описание: </span>{{ book.description|escape }}</p>
+
+                            <p class="object_string"><span class="oblique">Автор: </span>{{ book.author.nameAuthor|escape }}</p>
+                            <p class="object_string"><span class="oblique">Место расположения: </span><br>{{ book.url|escape }}</p>
+                            <p class="object_string"><span class="oblique">Страниц: </span>{{ book.page|escape }}</p>
+                            <p class="object_string"><span class="oblique">Год: </span>{{ book.year|escape }}</p>
+                            <p class="object_string"><span class="oblique">Город: </span>{{ book.city.city|escape }}</p>
+                            <p class="object_string"><span class="oblique">Издательство: </span>{{ book.publishingHouse.namePublishingHouse|escape }}</p>
+                            <p class="object_string"><span class="oblique">Вид издательства: </span>{{ book.typePh.nameTypePh|escape }}</p>
+                            <p class="object_string"><span class="oblique">Категория: </span>{{ book.parent.nameCategory|escape }}</p>
+
+                            {% if user is defined and user is not null %}
+                                <div class="book-actions">
+                                    {% if user.id_role == 1 %}
+                                        <div>
+                                            <p class="object_string">
+                                                <span class="oblique">
+                                                    <h5 align="center" class="grow">
+                                                        <a href="{{ path('edit_get', {'bookId': book.idBooks}) }}">
+                                                            <img src="{{ asset('img/edit.png') }}" width="42" height="42"
+                                                                 style="right: 10px;position: inherit;vertical-align: top;" />
+                                                        </a>
+                                                    </h5>
+                                                </span>
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                    {% if favorite_books is defined and favorite_books is not null %}
+                                        <div class="favorite-flag">
+                                            {% if book.idBooks in favorite_books %}
+                                                <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}" data-value="Y">
+                                                    <i class="fa fa-star"></i>
+                                                </span>
+                                            {% else %}
+                                                <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}" data-value="N">
+                                                    <i class="fa fa-star-o"></i>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </article>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{  asset('js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{  asset('js/jquery.accordion.js') }}"></script>
+    <script src="{{  asset('js/jquery.cookie.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $(".category").dcAccordion();
+        });
+    </script>
+    <script src="{{ asset('js/favoritebookscontroller.js') }}"></script>
+    <script>
+        {% if user is defined and user is not null %}
+        document.addEventListener('DOMContentLoaded', () => {
+            const fbc = new FavoriteBooksController('{{ user.id_users }}');
+        });
+        {% endif %}
+    </script>
+
+{% endblock %}
+

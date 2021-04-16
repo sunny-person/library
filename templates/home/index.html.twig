@@ -16,6 +16,24 @@
             </form>
         </div>
 
+        {% if user is defined and user is not null %}
+            <div class="admin-actions__action">
+                <a href="{{ path('book_favorites') }}" class="btn edit-btn">Избранные книги</a>
+            </div>
+            {% if user.id_role == 1 %}
+                <hr />
+                <div class="admin-actions">
+                    <div class="admin-actions__action">
+                        <a href="{{ path('add_get') }}" class="btn edit-btn">Добавление</a>
+                    </div>
+                    <div class="admin-actions__action">
+                        <a href="{{ path('admin_index') }}" class="btn edit-btn">Администрирование</a>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+
     </div>
     <article>
         {% if breadcrumbs is not null %}
@@ -24,7 +42,7 @@
         {% if books is null or books is empty %}
             <p>В данном разделе книги отсутствуют!</p>
         {% else %}
-            {% include 'book/list.html.twig' with {'books': books, 'user': user} %}
+            {% include 'book/list.html.twig' with {'books': books, 'user': user, 'favoriteBooks': favoriteBooks} %}
             {% if pagination is not null %}
                 {{ pagination|raw }}
             {% endif %}

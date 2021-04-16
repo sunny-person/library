@@ -20,8 +20,10 @@
         <p class="object_string"><span class="oblique">Категория: </span>{{ book.parent.nameCategory|escape }}</p>
 
         {% if user is defined and user is not null %}
-            {% if user.id_role == 1 %}
-                <p class="object_string">
+            <div class="book-actions">
+                {% if user.id_role == 1 %}
+                    <div>
+                        <p class="object_string">
                 <span class="oblique">
                     <h5 align="center" class="grow">
                         <a href="{{ path('edit_get', {'bookId': book.idBooks}) }}">
@@ -30,9 +32,32 @@
                         </a>
                     </h5>
                 </span>
-                </p>
-            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+                {% if favoriteBooks is defined and favoriteBooks is not null %}
+                    <div class="favorite-flag">
+                        {% if book.idBooks in favoriteBooks %}
+                            <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}" data-value="Y">
+                                <i class="fa fa-star"></i>
+                            </span>
+                        {% else %}
+                            <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}" data-value="N">
+                                <i class="fa fa-star-o"></i>
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
         {% endif %}
 
     </div>
 {% endfor %}
+<script src="{{ asset('js/favoritebookscontroller.js') }}"></script>
+<script>
+    {% if user is defined and user is not null %}
+    document.addEventListener('DOMContentLoaded', () => {
+        const fbc = new FavoriteBooksController('{{ user.id_users }}');
+    });
+    {% endif %}
+</script>

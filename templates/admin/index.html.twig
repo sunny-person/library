@@ -54,7 +54,11 @@
                                     <th scope="row">{{ category.idCategory }}</th>
                                     <td>{{ category.nameCategory }}</td>
                                     <td>{{ category.parent }}</td>
-                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                    <td>
+                                        <a href="{{ path('category_edit', {'categoryId': category.idCategory}) }}" class="btn edit-btn">
+                                            Редактировать
+                                        </a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         {% endif %}
@@ -77,7 +81,8 @@
                                 <tr>
                                     <th scope="row">{{ city.idCity }}</th>
                                     <td>{{ city.city }}</td>
-                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                    <td>
+                                        <a href="{{ path('city_edit', {'cityId': city.idCity}) }}" class="btn edit-btn">Редактировать</a></td>
                                 </tr>
                             {% endfor %}
                         {% endif %}
@@ -100,7 +105,8 @@
                                 <tr>
                                     <th scope="row">{{ ph.idPublishingHouse }}</th>
                                     <td>{{ ph.namePublishingHouse }}</td>
-                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                    <td>
+                                        <a href="{{ path('publishing_house_edit', {'publishingHouseId': ph.idPublishingHouse}) }}" class="btn edit-btn">Редактировать</a></td>
                                 </tr>
                             {% endfor %}
                         {% endif %}
@@ -123,7 +129,8 @@
                                 <tr>
                                     <th scope="row">{{ phType.idTypePh }}</th>
                                     <td>{{ phType.nameTypePh }}</td>
-                                    <td><button class="btn edit-btn">Редактировать</button></td>
+                                    <td>
+                                        <a href="{{ path('type_ph_edit', {'typePhId': phType.idTypePh}) }}" class="btn edit-btn">Редактировать</a></td>
                                 </tr>
                             {% endfor %}
                         {% endif %}

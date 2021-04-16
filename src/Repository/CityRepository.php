@@ -46,4 +46,43 @@ class CityRepository extends EntityRepository {
 
         return $statement->execute();
     }
+
+    public function getCity(int $cityId): City {
+        $query = "SELECT * FROM city WHERE id_city = ?";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $cityId);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            throw new \InvalidArgumentException('City with such id not found!');
+        }
+
+        $dbCity = $statement->fetchAssociative();
+
+        $city = new City();
+        $city->setCity($dbCity['city']);
+        $city->setIdCity($dbCity['id_city']);
+
+        return $city;
+    }
+
+    public function updateCity(City $city): bool {
+        $query = "UPDATE city SET city = :city WHERE id_city = :id";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue('city', $city->getCity());
+        $statement->bindValue('id', $city->getIdCity());
+
+        return $statement->execute();
+    }
+
+    public function deleteCity(City $city): bool {
+        $query = "DELETE FROM city WHERE id_city = ?";
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $city->getIdCity());
+
+        return $statement->execute();
+    }
 }
