@@ -5,7 +5,7 @@
                     <a href="/?page=1" title="Первая страница">&laquo;</a>
                 </div>
                 <div class="page-item">
-                    <a href="/?page={{ pagination.prevPage|escape }}">{{ pagination.prevPage|escape }}</a>
+                    <a href="{{ pagination.pageUrl }}/?page={{ pagination.prevPage|escape }}">{{ pagination.prevPage|escape }}</a>
                 </div>
             {% endif %}
             <div class="page-item">
@@ -13,10 +13,10 @@
             </div>
             {% if pagination.hasNextPage %}
                 <div class="page-item">
-                    <a href="/?page={{ pagination.nextPage|escape }}">{{ pagination.nextPage|escape }}</a>
+                    <a href="{{ pagination.pageUrl }}/?page={{ pagination.nextPage|escape }}">{{ pagination.nextPage|escape }}</a>
                 </div>
                 <div class="page-item">
-                    <a href="/?page={{ pagination.lastPage|escape }}" title="Последняя страница">&raquo;</a>
+                    <a href="{{ pagination.pageUrl }}/?page={{ pagination.lastPage|escape }}" title="Последняя страница">&raquo;</a>
                 </div>
             {% endif %}
             <div class="page-item">

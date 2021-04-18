@@ -12,6 +12,7 @@ use App\Entity\FavoriteBook;
 use App\Entity\PublishingHouse;
 use App\Entity\TypePh;
 use App\Repository\FavoriteBooksRepository;
+use App\UI\Pagination;
 use Exception;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,6 +27,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class BookController extends AbstractController {
 
     private const ADMIN_ROLE_ID = 1;
+    private const BOOKS_PER_PAGE = 4;
 
     /** @var SessionInterface $session */
     private $session;
@@ -494,22 +496,14 @@ class BookController extends AbstractController {
     /**
      * @Route("/book_favorites", name="book_favorites")
      */
-    public function getUserBooks(): Response { 
+    public function getUserBooks(Request $request): Response {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
         }
-
         $notFoundMessage = 'В список избранных книг ничего не добавлено!';
 
-        $books = $this->getDoctrine()->getRepository(Books::class)->getBooks();
-
-        $favoriteBooks = array();
         $favoriteBooks = $this->getDoctrine()->getRepository(FavoriteBook::class)->getUserEntries($user['id_users']);
-        /** @var FavoriteBook $entry */
-        $favoriteBooks = array_map(function ($entry) {
-            return $entry->getBookId();
-        }, $favoriteBooks);
 
         if (empty($favoriteBooks)) {
             return $this->render(
@@ -521,12 +515,48 @@ class BookController extends AbstractController {
             );
         }
 
+        /** @var FavoriteBook $entry */
+        $favoriteBooks = array_map(function ($entry) {
+            return $entry->getBookId();
+        }, $favoriteBooks);
+
+        $page = (int) $request->get('page');
+        if ($page <= 0) {
+            $page = 1;
+        }
+
+        $booksRepository = $this->getDoctrine()->getRepository(Books::class);
+
+        $booksCount = $booksRepository->getUserFavoriteBooksCount($user['id_users']);
+        $pagination = new Pagination($page, $booksCount, self::BOOKS_PER_PAGE);
+
+        $books = $booksRepository->getUserFavoriteBooks($user['id_users'], $pagination->getLimit(), $pagination->getOffset());
+
+        $pageNavigation = null;
+        if ($booksCount > self::BOOKS_PER_PAGE) {
+            $pageNavigation = $this->renderView(
+                'ui/pagination.html.twig',
+                array(
+                    'pagination' => array(
+                        'currentPage' => $pagination->getCurrentPage(),
+                        'hasNextPage' => $pagination->hasNextPage(),
+                        'lastPage' => $pagination->getTotalPageCount(),
+                        'nextPage' => $pagination->getCurrentPage() + 1,
+                        'prevPage' => $pagination->getCurrentPage() - 1,
+                        'pageUrl' => '/book_favorites'
+                    )
+                )
+            );
+        }
+
+
         return $this->render(
             'book/favoritesbooks.html.twig',
             array(
                 'favorite_books' => $favoriteBooks,
                 'books' => $books,
-                'user' => $user
+                'user' => $user,
+                'pagination' => $pageNavigation
             )
         );
     }

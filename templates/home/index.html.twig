@@ -2,38 +2,6 @@
 {% block body %}
     <div id="leftCol">
         {{ render('/menu/categories') }}
-
-        <div class="search">
-            <form action="{{ path('search') }}" method="GET">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="Поиск">
-                    <div class="input-group-append">
-                        <button class="btn search-btn" type="submit">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        {% if user is defined and user is not null %}
-            <div class="admin-actions__action">
-                <a href="{{ path('book_favorites') }}" class="btn edit-btn">Избранные книги</a>
-            </div>
-            {% if user.id_role == 1 %}
-                <hr />
-                <div class="admin-actions">
-                    <div class="admin-actions__action">
-                        <a href="{{ path('add_get') }}" class="btn edit-btn">Добавление</a>
-                    </div>
-                    <div class="admin-actions__action">
-                        <a href="{{ path('admin_index') }}" class="btn edit-btn">Администрирование</a>
-                    </div>
-                </div>
-            {% endif %}
-        {% endif %}
-
-
     </div>
     <article>
         {% if breadcrumbs is not null %}
@@ -49,17 +17,5 @@
         {% endif %}
     </article>
     <br />
-
-{% endblock %}
-
-{% block javascripts %}
-    <script src="{{  asset('js/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{  asset('js/jquery.accordion.js') }}"></script>
-    <script src="{{  asset('js/jquery.cookie.js') }}"></script>
-    <script>
-        $(document).ready(function(){
-            $(".category").dcAccordion();
-        });
-    </script>
 
 {% endblock %}

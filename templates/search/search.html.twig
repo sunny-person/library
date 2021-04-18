@@ -3,15 +3,14 @@
     <div id="leftCol">
         {{ render('/menu/categories') }}
     </div>
-    <div class="container">
-        {% if message is defined and message is not null %}
-            <span>{{ message|escape }}</span>
-        {% endif %}
-        {% if books is defined and books is not null and books is not empty %}
-        <article>
-            {% include 'book/list.html.twig' with {'books': books, 'user': user} %}
-        </article>
-        {% endif %}
-    </div>
+    {% if message is defined and message is not null %}
+        <span>{{ message|escape }}</span>
+    {% endif %}
+    {% if books is defined and books is not null and books is not empty %}
+    <article>
+        {% include 'book/list.html.twig' with {'books': books, 'user': user} %}
+    </article>
+    <br />
+    {% endif %}
 
 {% endblock %}

@@ -70,7 +70,8 @@ class HomeController extends AbstractController {
                         'hasNextPage' => $pagination->hasNextPage(),
                         'lastPage' => $pagination->getTotalPageCount(),
                         'nextPage' => $pagination->getCurrentPage() + 1,
-                        'prevPage' => $pagination->getCurrentPage() - 1
+                        'prevPage' => $pagination->getCurrentPage() - 1,
+                        'pageUrl' => ''
                     )
                 )
             );

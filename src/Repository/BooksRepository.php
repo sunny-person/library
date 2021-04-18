@@ -245,6 +245,44 @@ class BooksRepository extends EntityRepository {
         return $books;
     }
 
+    public function getUserFavoriteBooks(int $userId, int $limit = 10, int $offset = 0): array {
+        $query = 'SELECT * FROM books
+                  LEFT JOIN category on category.id_category = books.parent
+                  LEFT JOIN author on author.id_author = books.id_author
+                  LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
+                  LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
+                  LEFT JOIN city on city.id_city = books.id_city
+                  JOIN favorite_book fb on fb.book_id = books.id_books
+                  WHERE fb.user_id = :userId
+                  LIMIT :offset, :limit';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue('userId', $userId);
+        $statement->bindValue('offset', $offset, ParameterType::INTEGER);
+        $statement->bindValue('limit', $limit, ParameterType::INTEGER);
+        $statement->execute();
+
+        $dbBooks = $statement->fetchAllAssociative();
+        $books = array();
+        foreach ($dbBooks as $dbBook) {
+            $books[] = $this->createBook($dbBook);
+        }
+
+        return $books;
+    }
+
+    public function getUserFavoriteBooksCount(int $userId): int {
+        $query = 'SELECT COUNT(*) FROM books b
+                  JOIN favorite_book fb ON fb.book_id = b.id_books
+                  WHERE fb.user_id = ?';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($query);
+        $statement->bindValue(1, $userId);
+        $statement->execute();
+
+        return (int) $statement->fetchOne();
+    }
+
     private function createBook(array $dbBook): Books {
         $book = new Books();
         $book->setIdBooks($dbBook['id_books']);
