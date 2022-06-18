@@ -1,0 +1,28 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <div class="pageAdd">
+        <h2>Отзыв на книгу "{{ book.title }}"</h2>
+        <div class="tab-wrapper">
+            <div class="tab-content">
+                <div>
+                    {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.comment) }}
+                        <br>
+                        {{ form_widget(form.comment, {'attr': {'class': 'form-control', 'rows': '10'}}) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.value) }}
+                        <br>
+                        {{ form_widget(form.value, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    {{ form_widget(form.save, {'attr': {'class': 'button buttonBlue'}}) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            <a href="{{ path('rating_list', {'bookId': book.idBooks}) }}">
+                &#8678; список отзывов</a>
+        </div>
+    </div>
+{% endblock %}

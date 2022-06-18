@@ -16,7 +16,7 @@ class FavoriteBooksRepository extends EntityRepository {
         $statement->bindValue('u', $fb->getUserId());
         $statement->bindValue('b', $fb->getBookId());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function deleteEntry(FavoriteBook $fb): bool {
@@ -26,7 +26,7 @@ class FavoriteBooksRepository extends EntityRepository {
         $statement->bindValue('u', $fb->getUserId());
         $statement->bindValue('b', $fb->getBookId());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     /**
@@ -38,9 +38,9 @@ class FavoriteBooksRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $userId);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        $dbEntries = $statement->fetchAllAssociative();
+        $dbEntries = $result->fetchAllAssociative();
 
         $entries = array();
         foreach ($dbEntries as $dbEntry) {

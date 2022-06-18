@@ -18,7 +18,6 @@ class BooksRepository extends EntityRepository {
 
     public function getBooks(?int $categories = null, int $offset = 0, int $limit = 10) : array {
         $books = array();
-        $dbBooks = array();
 
         if (!isset($categories) || empty($categories)) {
             $dbBooks = $this->getAllBooks($offset, $limit);
@@ -46,17 +45,16 @@ class BooksRepository extends EntityRepository {
             LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
             LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
             LEFT JOIN city on city.id_city = books.id_city
+            LEFT JOIN (select avg(`value`) as avg, book_id from rating group by book_id) r on r.book_id = books.id_books
             ORDER BY title LIMIT ?, ?
             ";
 
         $statement = $connection->prepare($query);
         $statement->bindValue(1, $offset, ParameterType::INTEGER);
         $statement->bindValue(2, $limit, ParameterType::INTEGER);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        $result = $statement->fetchAllAssociative();
-
-        return $result;
+        return $result->fetchAllAssociative();
     }
 
     /**
@@ -72,14 +70,15 @@ class BooksRepository extends EntityRepository {
             LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
             LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
             LEFT JOIN city on city.id_city = books.id_city
+            LEFT JOIN (select avg(`value`) as avg, book_id from rating group by book_id) r on r.book_id = books.id_books
             WHERE books.parent = :cat OR category.parent = :cat
             ORDER BY title";
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue('cat', $category);
-        $statement->execute();
+        $result = $statement->execute();
 
-        return $statement->fetchAllAssociative();
+        return $result->fetchAllAssociative();
     }
 
     public function getBook(int $id): ?Books {
@@ -94,13 +93,13 @@ class BooksRepository extends EntityRepository {
             ORDER BY title";
         $statement = $connection->prepare($query);
         $statement->bindValue(1, $id);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        if ($statement->rowCount() < 1){
+        if ($result->rowCount() < 1){
             return null;
         }
 
-        $dbBook = $statement->fetchAssociative();
+        $dbBook = $result->fetchAssociative();
         return $this->createBook($dbBook);
     }
 
@@ -135,7 +134,7 @@ class BooksRepository extends EntityRepository {
         $statement->bindValue(9, $book->getCity());
         $statement->bindValue(10, $book->getParent());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     /**
@@ -171,7 +170,7 @@ class BooksRepository extends EntityRepository {
         $statement->bindValue(10, $book->getParent()->getIdCategory());
         $statement->bindValue(11, $book->getIdBooks());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     /**
@@ -185,7 +184,7 @@ class BooksRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $id);
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function getBooksCount(?int $category = null): int {
@@ -200,9 +199,9 @@ class BooksRepository extends EntityRepository {
         $query = 'SELECT COUNT(*) FROM books';
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
-        $statement->execute();
+        $result = $statement->execute();
 
-        return (int) $statement->fetchOne();
+        return (int) $result->fetchOne();
     }
 
     private function getBooksCountByCategory(int $category): int {
@@ -213,9 +212,9 @@ class BooksRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue('cat', $category);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        return (int) $statement->fetchOne();
+        return (int) $result->fetchOne();
     }
 
     /**
@@ -234,9 +233,9 @@ class BooksRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue('q', "%$find%");
-        $statement->execute();
+        $result = $statement->execute();
 
-        $dbBooks = $statement->fetchAllAssociative();
+        $dbBooks = $result->fetchAllAssociative();
         $books = array();
         foreach ($dbBooks as $dbBook) {
             $books[] = $this->createBook($dbBook);
@@ -260,9 +259,9 @@ class BooksRepository extends EntityRepository {
         $statement->bindValue('userId', $userId);
         $statement->bindValue('offset', $offset, ParameterType::INTEGER);
         $statement->bindValue('limit', $limit, ParameterType::INTEGER);
-        $statement->execute();
+        $result = $statement->execute();
 
-        $dbBooks = $statement->fetchAllAssociative();
+        $dbBooks = $result->fetchAllAssociative();
         $books = array();
         foreach ($dbBooks as $dbBook) {
             $books[] = $this->createBook($dbBook);
@@ -278,9 +277,9 @@ class BooksRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $userId);
-        $statement->execute();
+        $result = $statement->execute();
 
-        return (int) $statement->fetchOne();
+        return (int) $result->fetchOne();
     }
 
     private function createBook(array $dbBook): Books {
@@ -317,6 +316,12 @@ class BooksRepository extends EntityRepository {
         $city->setIdCity($dbBook['id_city']);
         $city->setCity($dbBook['city']);
         $book->setCity($city);
+
+        if (isset($dbBook['avg'])) {
+            $book->setAverageRating((int) $dbBook['avg']);
+        } else {
+            $book->setAverageRating(0);
+        }
 
         return $book;
     }

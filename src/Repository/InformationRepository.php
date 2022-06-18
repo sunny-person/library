@@ -15,12 +15,12 @@ class InformationRepository extends EntityRepository {
         $statement=$connection->prepare($query);
         $statement->bindValue(1, $userId);
         $statement->bindValue(2, $bookId);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        if($statement->rowCount() < 1) {
+        if($result->rowCount() < 1) {
             return null;
         }
-        $dbInformation = $statement->fetchAssociative();
+        $dbInformation = $result->fetchAssociative();
 
         $information = new Information();
         $information->setId($dbInformation['id']);
@@ -43,7 +43,7 @@ class InformationRepository extends EntityRepository {
         $statement->bindValue(3, $information->getPage());
         $statement->bindValue(4, $information->getDate());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function updateInformation(Information $information): bool{
@@ -56,7 +56,7 @@ class InformationRepository extends EntityRepository {
         $statement->bindValue(2, $information->getDate());
         $statement->bindValue(3, $information->getId());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
 }

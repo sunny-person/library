@@ -44,7 +44,7 @@ class CityRepository extends EntityRepository {
         $statement=$this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $city->getCity());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function getCity(int $cityId): City {
@@ -52,13 +52,13 @@ class CityRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $cityId);
-        $statement->execute();
+        $result = $statement->execute();
 
-        if ($statement->rowCount() < 1) {
+        if ($result->rowCount() < 1) {
             throw new \InvalidArgumentException('City with such id not found!');
         }
 
-        $dbCity = $statement->fetchAssociative();
+        $dbCity = $result->fetchAssociative();
 
         $city = new City();
         $city->setCity($dbCity['city']);
@@ -74,7 +74,7 @@ class CityRepository extends EntityRepository {
         $statement->bindValue('city', $city->getCity());
         $statement->bindValue('id', $city->getIdCity());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function deleteCity(City $city): bool {
@@ -83,6 +83,6 @@ class CityRepository extends EntityRepository {
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $city->getIdCity());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 }

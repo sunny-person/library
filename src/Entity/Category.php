@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
@@ -12,17 +13,23 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
  * @Entity(repositoryClass="App\Repository\CategoryRepository")
+ * @ORM\Table(name="category")
  */
 class Category
 {
-
     /**
      * @Id
      * @Column("`id_category`")
      * @GeneratedValue
      */
     private $idCategory;
+    /**
+     * @Column(name="name_category", type="string")
+     */
     private $nameCategory;
+    /**
+     * @Column(name="parent", type="integer")
+     */
     private $parent;
 
     /**

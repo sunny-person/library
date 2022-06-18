@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
@@ -11,18 +12,22 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
  * @Entity(repositoryClass="App\Repository\FavoriteBooksRepository")
+ * @ORM\Table(name="favorite_book")
  */
 class FavoriteBook {
-
     /**
      * @Id
      * @Column("id")
      * @GeneratedValue
      */
     private $id;
-
+    /**
+     * @Column(name="user_id", type="integer")
+     */
     private $userId;
-
+    /**
+     * @Column(name="book_id", type="integer")
+     */
     private $bookId;
 
     /**

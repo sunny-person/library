@@ -41,13 +41,13 @@ class AuthorRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $id, ParameterType::INTEGER);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        if ($statement->rowCount() < 1) {
+        if ($result->rowCount() < 1) {
             throw new InvalidArgumentException('Author not found!', 0);
         }
 
-        $dbAuthor = $statement->fetchAssociative();
+        $dbAuthor = $result->fetchAssociative();
 
         $author = new Author();
         $author->setIdAuthor($dbAuthor['id_author']);
@@ -68,7 +68,8 @@ class AuthorRepository extends EntityRepository {
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $author->getNameAuthor());
 
-        return $statement->execute();
+        $result = $statement->executeStatement();
+        return (bool) $result;
     }
 
     /**
@@ -82,7 +83,8 @@ class AuthorRepository extends EntityRepository {
         $statement->bindValue(1, $author->getNameAuthor());
         $statement->bindValue(2, $author->getIdAuthor());
 
-        return $statement->execute();
+        $result = $statement->executeStatement();
+        return (bool) $result;
     }
 
     public function deleteAuthor(Author $author): bool {
@@ -91,6 +93,7 @@ class AuthorRepository extends EntityRepository {
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $author->getIdAuthor());
 
-        return $statement->execute();
+        $result = $statement->executeStatement();
+        return (bool) $result;
     }
 }

@@ -29,8 +29,7 @@ class BookController extends AbstractController {
     private const ADMIN_ROLE_ID = 1;
     private const BOOKS_PER_PAGE = 4;
 
-    /** @var SessionInterface $session */
-    private $session;
+    private SessionInterface $session;
 
     private const UPLOAD_DIR = "upload_files/";
 

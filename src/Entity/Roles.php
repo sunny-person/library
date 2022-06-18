@@ -4,10 +4,20 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
+
+
 class Roles
 {
-
+    /**
+     * @ORM\Id()
+     * @ORM\Column(name="id_role")
+     * @ORM\GeneratedValue()
+     */
     private $idRole;
+    /**
+     * @ORM\Column(name="name", type="string")
+     */
     private $name;
 
     /**

@@ -5,6 +5,8 @@ namespace App\Repository;
 
 use App\Entity\PublishingHouse;
 use Doctrine\ORM\EntityRepository;
+use InvalidArgumentException;
+
 
 class PublishingHouseRepository extends EntityRepository {
 
@@ -42,7 +44,7 @@ class PublishingHouseRepository extends EntityRepository {
         $statement=$this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $publishingHouse->getNamePublishingHouse());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function getPublishingHouse($publishingHouseId): PublishingHouse{
@@ -50,13 +52,13 @@ class PublishingHouseRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $publishingHouseId);
-        $statement->execute();
+        $result = $statement->execute();
 
-        if ($statement->rowCount() < 1) {
+        if ($result->rowCount() < 1) {
             throw new InvalidArgumentException('Publishing House not found!', 0);
         }
 
-        $dbPublishingHouse = $statement->fetchAssociative();
+        $dbPublishingHouse = $result->fetchAssociative();
 
         $publishing_house = new PublishingHouse();
         $publishing_house->setIdPublishingHouse($dbPublishingHouse['id_publishing_house']);
@@ -72,7 +74,7 @@ class PublishingHouseRepository extends EntityRepository {
         $statement->bindValue('name', $publishingHouse->getNamePublishingHouse());
         $statement->bindValue('id', $publishingHouse->getIdPublishingHouse());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function deletePublishingHouse(PublishingHouse $publishingHouse): bool {
@@ -81,7 +83,7 @@ class PublishingHouseRepository extends EntityRepository {
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $publishingHouse->getIdPublishingHouse());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
 }

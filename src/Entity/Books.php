@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
@@ -11,26 +12,70 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
  * @Entity(repositoryClass="App\Repository\BooksRepository")
+ * @ORM\Table(name="books")
  */
 class Books
 {
-
     /**
      * @Id
      * @Column("`id_books`")
      * @GeneratedValue
      */
     private $idBooks;
+    /**
+     * @Column(name="title", type="string")
+     */
     private $title;
+    /**
+     * @Column(name="description", type="text")
+     */
     private $description;
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Author")
+     * @ORM\JoinColumn(name="id_author", referencedColumnName="id_author")
+     */
     private $author;
+    /**
+     * @Column(name="URL", type="string")
+     */
     private $url;
+    /**
+     * @Column(name="page", type="integer")
+     */
     private $page;
+    /**
+     * @Column(name="parent", type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category")
+     * @ORM\JoinColumn(name="category", referencedColumnName="id_category")
+     */
     private $parent;
+    /**
+     * @Column(name="id_publishing_house", type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\PublishingHouse")
+     * @ORM\JoinColumn(name="id_publishing_house", referencedColumnName="id_publishing_house")
+     */
     private $publishingHouse;
+    /**
+     * @Column(name="id_type_ph", type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\TypePh")
+     * @ORM\JoinColumn(name="id_type_ph", referencedColumnName="id_type_ph")
+     */
     private $typePh;
+    /**
+     * @Column(name="id_city", type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\City")
+     * @ORM\JoinColumn(name="id_city", referencedColumnName="id_city")
+     */
     private $city;
+    /**
+     * @Column(name="year", type="integer")
+     */
     private $year;
+
+    /**
+     * @var ?int $averageRating
+     */
+    private $averageRating;
 
     /**
      * @return mixed
@@ -84,6 +129,10 @@ class Books
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    public function getAverageRating(): ?int {
+        return $this->averageRating;
     }
 
     /**
@@ -206,4 +255,7 @@ class Books
         $this->year = $year;
     }
 
+    public function setAverageRating(?int $averageRating): void {
+        $this->averageRating = $averageRating;
+    }
 }

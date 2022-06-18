@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h3>Отзыв на книгу "{{ rating.book.title|escape }}"</h3>
+        <div class="card">
+            <div class="card-header">
+                {{ rating.user.fullName|escape }}
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ rating.comment|escape }}</p>
+            </div>
+            <div class="card-footer">
+                <span>Оценка {{ rating.value }} / 5</span>
+            </div>
+        </div>
+        <a href="{{ path('rating_list', {'bookId': rating.book.idBooks}) }}">
+            &#8678; список отзывов</a>
+    </div>
+{% endblock %}

@@ -23,9 +23,9 @@ class CategoryRepository extends EntityRepository {
         $connection = $this->getEntityManager()->getConnection();
 
         $statement = $connection->prepare($query);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        $result = $statement->fetchAllAssociative();
+        $result = $result->fetchAllAssociative();
 
         $categories = array();
         foreach ($result as $dbCategory) {
@@ -52,16 +52,16 @@ class CategoryRepository extends EntityRepository {
                     where c1.id_category = ?';
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $categoryId);
-        $statement->execute();
+        $result = $statement->execute();
 
-        if ($statement->rowCount() < 1) {
+        if ($result->rowCount() < 1) {
             return array(
                 'child' => null,
                 'parent' => null
             );
         }
 
-        $dbCategories = $statement->fetchAssociative();
+        $dbCategories = $result->fetchAssociative();
 
         $parentId = $dbCategories['c2ID'] ?? 0;
 
@@ -102,7 +102,7 @@ class CategoryRepository extends EntityRepository {
         $statement->bindValue(1, $category->getNameCategory());
         $statement->bindValue(2, $category->getParent());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function getCategory(int $categoryId): Category {
@@ -110,13 +110,13 @@ class CategoryRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $categoryId);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
-        if ($statement->rowCount() < 1) {
+        if ($result->rowCount() < 1) {
             throw new \InvalidArgumentException('Category with such id not found!', 0);
         }
 
-        $dbCategory = $statement->fetchAssociative();
+        $dbCategory = $result->fetchAssociative();
 
         $category = new Category();
         $category->setIdCategory($dbCategory['id_category']);
@@ -141,7 +141,7 @@ class CategoryRepository extends EntityRepository {
         $statement->bindValue('id', $category->getIdCategory());
 
         try {
-            return $statement->execute();
+            return (bool) $statement->executeStatement();
         } catch (Exception $e) {
             $errorMessage = 'Не удалось обновить категорию.';
             throw new CategoryRepositoryException($errorMessage, 0, $e);
@@ -161,7 +161,7 @@ class CategoryRepository extends EntityRepository {
         $statement->bindValue(1, $category->getIdCategory());
 
         try {
-            return $statement->execute();
+            return (bool) $statement->executeStatement();
         } catch (Exception $e) {
             $errorMessage = 'Не удалось обновить категорию.';
             throw new CategoryRepositoryException($errorMessage, 1, $e);

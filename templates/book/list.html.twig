@@ -11,13 +11,13 @@
         <p class="object_string"><span class="oblique">Описание: </span>{{ book.description|escape }}</p>
 
         <p class="object_string"><span class="oblique">Автор: </span>{{ book.author.nameAuthor|escape }}</p>
-        <p class="object_string"><span class="oblique">Место расположения: </span><br>{{ book.url|escape }}</p>
         <p class="object_string"><span class="oblique">Страниц: </span>{{ book.page|escape }}</p>
         <p class="object_string"><span class="oblique">Год: </span>{{ book.year|escape }}</p>
         <p class="object_string"><span class="oblique">Город: </span>{{ book.city.city|escape }}</p>
         <p class="object_string"><span class="oblique">Издательство: </span>{{ book.publishingHouse.namePublishingHouse|escape }}</p>
         <p class="object_string"><span class="oblique">Вид издательства: </span>{{ book.typePh.nameTypePh|escape }}</p>
         <p class="object_string"><span class="oblique">Категория: </span>{{ book.parent.nameCategory|escape }}</p>
+        <p class="object_string"><span class="oblique">Средняя оценка: </span>{{ book.averageRating|escape }} / 5</p>
 
         {% if user is defined and user is not null %}
             <div class="book-actions">
@@ -35,6 +35,9 @@
                         </p>
                     </div>
                 {% endif %}
+                <div>
+                    <a href="{{ path('rating_list', {'bookId': book.idBooks}) }}">Отзывы</a>
+                </div>
                 {% if favoriteBooks is defined and favoriteBooks is not null %}
                     <div class="favorite-flag">
                         {% if book.idBooks in favoriteBooks %}

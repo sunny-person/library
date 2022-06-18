@@ -20,13 +20,13 @@ class UsersRepository extends EntityRepository {
         $connection = $this->getEntityManager()->getConnection();
 
         $statement = $connection->prepare($query);
-        $statement->execute();
+        $result = $statement->execute();
 
-        if ($statement->rowCount() < 1) {
+        if ($result->rowCount() < 1) {
             return null;
         }
 
-        $dbUser = $statement->fetchAssociative();
+        $dbUser = $result->fetchAssociative();
 
         $user = new Users();
         $user->setIdUsers($dbUser['id_users']);
@@ -50,7 +50,7 @@ class UsersRepository extends EntityRepository {
         $statement->bindValue("email", $email);
         $statement->bindValue("password", $password);
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
 }

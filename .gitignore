@@ -17,3 +17,8 @@
 
 /.idea
 /public/upload_files/
+
+/.docker/data/*
+/.docker/logs/nginx/*
+/.docker/logs/mysql/*
+/.docker/mysql/*

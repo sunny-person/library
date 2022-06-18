@@ -6,6 +6,8 @@ namespace App\Repository;
 
 use App\Entity\TypePh;
 use Doctrine\ORM\EntityRepository;
+use InvalidArgumentException;
+
 
 class PhTypesRepository extends EntityRepository {
 
@@ -37,7 +39,7 @@ class PhTypesRepository extends EntityRepository {
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue('name', $typePh->getNameTypePh());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function getPHType(int $id): TypePh {
@@ -45,13 +47,13 @@ class PhTypesRepository extends EntityRepository {
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $id);
-        $statement->execute();
+        $result = $statement->execute();
 
-        if ($statement->rowCount() < 1) {
+        if ($result->rowCount() < 1) {
             throw new InvalidArgumentException('TypePH not found!', 0);
         }
 
-        $dbTypePh = $statement->fetchAssociative();
+        $dbTypePh = $result->fetchAssociative();
 
         $typePh = new TypePh();
         $typePh->setIdTypePh($dbTypePh['id_type_ph']);
@@ -68,7 +70,7 @@ class PhTypesRepository extends EntityRepository {
         $statement->bindValue('name', $typePh->getNameTypePh());
         $statement->bindValue('id', $typePh->getIdTypePh());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 
     public function deleteTypePh(TypePh $typePh): bool {
@@ -77,6 +79,6 @@ class PhTypesRepository extends EntityRepository {
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
         $statement->bindValue(1, $typePh->getIdTypePh());
 
-        return $statement->execute();
+        return (bool) $statement->executeStatement();
     }
 }

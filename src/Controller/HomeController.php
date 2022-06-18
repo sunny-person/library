@@ -19,7 +19,7 @@ class HomeController extends AbstractController {
     private const BOOKS_PER_PAGE = 4;
 
     /**
-     * @Route("/")
+     * @Route("/", name="home")
      *
      * @param Request $request
      * @return Response

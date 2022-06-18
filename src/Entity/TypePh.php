@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
@@ -21,6 +22,9 @@ class TypePh
      * @GeneratedValue
      */
     private $idTypePh;
+    /**
+     * @Column("name_type_ph")
+     */
     private $nameTypePh;
 
     /**

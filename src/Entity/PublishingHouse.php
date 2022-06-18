@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
  * @Entity(repositoryClass="App\Repository\PublishingHouseRepository")
+ * @ORM\Table(name="publishing_house")
  */
 class PublishingHouse
 {
@@ -21,6 +23,9 @@ class PublishingHouse
      * @GeneratedValue
      */
     private $idPublishingHouse;
+    /**
+     * @Column(name="name_publishing_house", type="string")
+     */
     private $namePublishingHouse;
 
     /**

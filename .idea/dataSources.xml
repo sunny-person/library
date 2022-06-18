@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="library@127.0.0.1" uuid="da85c1a3-a4bb-48cd-9db2-2c63da742cfe">
+    <data-source source="LOCAL" name="library@localhost" uuid="97b88b61-608e-44c3-ade4-607da6f163ec">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://127.0.0.1:55555/library</jdbc-url>
-      <driver-properties>
-        <property name="serverTimezone" value="UTC" />
-      </driver-properties>
-    </data-source>
-    <data-source source="LOCAL" name="heroku_7b20d7553d55ecb@eu-cdbr-west-03.cleardb.net" uuid="b9bdcb86-f3e6-4aaf-98b0-add2939616f3">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://eu-cdbr-west-03.cleardb.net:3306/heroku_7b20d7553d55ecb</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/library</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>

@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
@@ -14,17 +15,31 @@ use Doctrine\ORM\Mapping\GeneratedValue;
  */
 class Users
 {
-
     /**
      * @Id
      * @Column("id_users")
      * @GeneratedValue
      */
     private $idUsers;
+    /**
+     * @Column(name="full_name", type="string")
+     */
     private $fullName;
+    /**
+     * @Column(name="login", type="string")
+     */
     private $login;
+    /**
+     * @Column(name="email", type="string")
+     */
     private $email;
+    /**
+     * @Column(name="password", type="string")
+     */
     private $password;
+    /**
+     * @Column(name="id_role", type="integer")
+     */
     private $idRole;
 
     /**

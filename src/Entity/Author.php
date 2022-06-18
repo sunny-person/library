@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping\Column;
 
 /**
  * @Entity(repositoryClass="App\Repository\AuthorRepository")
+ * @ORM\Table(name="author")
  */
 class Author {
 
@@ -20,7 +22,9 @@ class Author {
      * @GeneratedValue
      */
     private $idAuthor;
-
+    /**
+     * @Column(name="name_author", type="string")
+     */
     private $nameAuthor;
 
     /**
