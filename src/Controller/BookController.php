@@ -34,7 +34,8 @@ class BookController extends AbstractController {
     private const UPLOAD_DIR = "upload_files/";
 
     private const ALLOWED_EXTENSIONS = array(
-        'pdf'
+        'pdf',
+        'djvu'
     );
 
     public function __construct(SessionInterface $session) {

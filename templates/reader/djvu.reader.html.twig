@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
 
-    <script src="{{ asset('js/pdf.min.js') }}"></script>
-    <script src="{{ asset('js/pdf.worker.min.js') }}"></script>
-    <title>PDF Viewer</title>
+    <script src="{{ asset('js/djvu.js') }}"></script>
+    <script src="{{ asset('js/djvu_viewer.js') }}"></script>
+    <title>DjVu Viewer</title>
 </head>
 <body>
 <div class="row">
@@ -33,16 +33,18 @@
     </div>
 </div>
 
-<div id="pdfcanvas">
+<div id="djvucanvas">
     <div class="row">
-        <div class="col-lg-12 col-xs-4"><canvas id="pdf_renderer"></canvas></div>
+        <div class="col-lg-12 col-xs-4" style="overflow: scroll; width: 800px; height: 800px"><canvas id="djvu_renderer"></canvas></div>
     </div>
 </div>
 <script src="{{ asset('js/userinfocontroller.js') }}"></script>
-<script src="{{ asset('js/example.js') }}"></script>
+<script src="{{ asset('js/reader/DjvuReader.js') }}"></script>
 <script>
-    const userInfoController = new UserInfoController('{{ user.id_users }}', '{{ book.idBooks }}');
-    myState.Init(null, 1, 0.5, userInfoController);
+    document.addEventListener('DOMContentLoaded', async function () {
+        const userInfoController = new UserInfoController('{{ user.id_users }}', '{{ book.idBooks }}');
+        djvuState.Init(null, 1, 0.5, userInfoController);
+    });
 </script>
 </body>
 </html>

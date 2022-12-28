@@ -1,11 +1,10 @@
 ﻿let myState = {}
 
-myState.Init = function(pdf, currentPage, zoom, user, book) {
+myState.Init = function(pdf, currentPage, zoom, userInfoController) {
     this.pdf = pdf;
     this.currentPage = currentPage;
     this.zoom = zoom;
-    this.user = user;
-    this.book = book;
+    this.userInfoController = userInfoController;
 }
 
 const ENTER_KEY_CODE = 13;
@@ -77,8 +76,8 @@ window.onload = function() {
 function render_save(page, button) {
     document.getElementById("current_page").value = myState.currentPage;
     button.disabled = true;
-    render().then(response => {
-        saveUserInfo(myState.user, myState.currentPage, myState.book);
+    render().then(async () => {
+        await myState.userInfoController.saveUserInformation(myState.currentPage);
         button.disabled = false;
     }).catch(reason => { console.warn(reason.message); });
 }
@@ -114,63 +113,11 @@ function go() {
 
     //передаем наш полученный url и работает с документом
     pdfjsLib.getDocument(url).then(async (pdf) => {
-        myState.currentPage = await getUserInformation(myState.user, myState.book);
+        myState.currentPage = await myState.userInfoController.getUserInformation();
         myState.pdf = pdf;
         //общее количество страниц в документе
         document.querySelector('#page_count').textContent = myState.pdf.numPages;
         document.getElementById('current_page').value = myState.currentPage;
         await render();
     });
-}
-
-function saveUserInfo(user, page, book) {
-    let data = {
-        user: user,
-        page: page,
-        book: book
-    };
-
-    fetch(
-        `/reader/${book}/save_user_information`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            body: JSON.stringify(data)
-        }
-    ).then(async (response) => {
-        let responseData = await response.json();
-        if (responseData.error !== undefined) {
-            console.warn(responseData.error);
-            return;
-        }
-        console.log(responseData.message);
-    }).catch((error) => { console.warn(error.message); });
-}
-
-async function getUserInformation(user, book) {
-    let data = {
-        user: user,
-        book: book
-    };
-
-    try {
-        let response = await fetch(
-            `/reader/${book}/get_user_information`,
-            {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                },
-                body: JSON.stringify(data)
-            }
-        );
-
-        let responseData = await response.json();
-        return Number(responseData.page);
-    } catch (e) {
-        console.warn(e.message);
-    }
-    return 1;
 }

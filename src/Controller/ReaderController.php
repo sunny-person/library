@@ -39,13 +39,27 @@ class ReaderController extends AbstractController {
         if(!isset($book)){
             return new RedirectResponse('/');
         }
-        return $this->render(
-            'reader/reader.html.twig',
-            array(
-                'user'=>$user,
-                'book'=>$book
-            )
-        );
+
+        $bookFileExt = pathinfo($book->getUrl(), PATHINFO_EXTENSION);
+        if ($bookFileExt === 'pdf') {
+            return $this->render(
+                    'reader/reader.html.twig',
+                    array(
+                            'user' => $user,
+                            'book' => $book
+                    )
+            );
+        } else if ($bookFileExt === 'djvu') {
+            return $this->render(
+                    'reader/djvu.reader.html.twig',
+                    array(
+                            'user' => $user,
+                            'book' => $book,
+                    )
+            );
+        }
+
+        return new RedirectResponse('/');
     }
 
     /**

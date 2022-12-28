@@ -19,10 +19,6 @@ services:
     volumes:
       - ./:/var/www/html
       - ./.docker/php/conf:/usr/local/etc/php/conf.d
-    environment:
-      DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/library"
-    env_file:
-      - ".env.local"
   db:
     image: mysql:latest
     ports:

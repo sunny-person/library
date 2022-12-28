@@ -10,6 +10,14 @@
 
         <p class="object_string"><span class="oblique">Описание: </span>{{ book.description|escape }}</p>
 
+        {% if 'djvu' in book.url %}
+            <p class="object_string"><span class="oblique">Тип файла: </span>{{'djvu'|escape }}</p>
+        {% endif %}
+
+        {% if 'pdf' in book.url %}
+            <p class="object_string"><span class="oblique">Тип файла: </span>{{'pdf'|escape }}</p>
+        {% endif %}
+
         <p class="object_string"><span class="oblique">Автор: </span>{{ book.author.nameAuthor|escape }}</p>
         <p class="object_string"><span class="oblique">Страниц: </span>{{ book.page|escape }}</p>
         <p class="object_string"><span class="oblique">Год: </span>{{ book.year|escape }}</p>
