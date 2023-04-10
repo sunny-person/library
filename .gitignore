@@ -1,5 +1,6 @@
 
 ###> symfony/framework-bundle ###
+#Environments
 /.env.local
 /.env.local.php
 /.env.*.local
@@ -15,9 +16,12 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
+#файлы конфигурации IDE
 /.idea
+#загружаемые файлы
 /public/upload_files/
 
+#docker settings
 /.docker/data/*
 /.docker/logs/nginx/*
 /.docker/logs/mysql/*
