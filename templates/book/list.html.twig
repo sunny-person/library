@@ -1,67 +1,104 @@
 {% for book in books %}
-    <div class="object">
-        {% if user is defined and user is not null%}
-            <div class="circle"><span class="title">
-    <a href="{{  path('reader', { 'bookId': book.idBooks}) }}" target="_blank">
-        {{ book.title|escape }} </a>
-            </span></div>
-        {% endif %}
-
-
-        <p class="object_string"><span class="oblique">Описание: </span>{{ book.description|escape }}</p>
-
-        {% if 'djvu' in book.url %}
-            <p class="object_string"><span class="oblique">Тип файла: </span>{{'djvu'|escape }}</p>
-        {% endif %}
-
-        {% if 'pdf' in book.url %}
-            <p class="object_string"><span class="oblique">Тип файла: </span>{{'pdf'|escape }}</p>
-        {% endif %}
-
-        <p class="object_string"><span class="oblique">Автор: </span>{{ book.author.nameAuthor|escape }}</p>
-        <p class="object_string"><span class="oblique">Страниц: </span>{{ book.page|escape }}</p>
-        <p class="object_string"><span class="oblique">Год: </span>{{ book.year|escape }}</p>
-        <p class="object_string"><span class="oblique">Город: </span>{{ book.city.city|escape }}</p>
-        <p class="object_string"><span class="oblique">Издательство: </span>{{ book.publishingHouse.namePublishingHouse|escape }}</p>
-        <p class="object_string"><span class="oblique">Вид издательства: </span>{{ book.typePh.nameTypePh|escape }}</p>
-        <p class="object_string"><span class="oblique">Категория: </span>{{ book.parent.nameCategory|escape }}</p>
-        <p class="object_string"><span class="oblique">Средняя оценка: </span>{{ book.averageRating|escape }} / 5</p>
-
-        {% if user is defined and user is not null %}
-            <div class="book-actions">
-                {% if user.id_role == 1 %}
-                    <div>
-                        <p class="object_string">
-                <span class="oblique">
-                    <h5 align="center" class="grow">
-                        <a href="{{ path('edit_get', {'bookId': book.idBooks}) }}">
-                            <img src="{{ asset('img/edit.png') }}" width="42" height="42"
-                                 style="right: 10px;position: inherit;vertical-align: top;" />
-                        </a>
-                    </h5>
-                </span>
-                        </p>
-                    </div>
-                {% endif %}
-                <div>
-                    <a href="{{ path('rating_list', {'bookId': book.idBooks}) }}">Отзывы</a>
-                </div>
-                {% if favoriteBooks is defined and favoriteBooks is not null %}
-                    <div class="favorite-flag">
-                        {% if book.idBooks in favoriteBooks %}
-                            <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}" data-value="Y">
+    <div class="box">
+        <div class="book-info">
+            {% if user is defined and user is not null %}
+                <div class="nav_book">
+                    {% if user.id_role == 1 %}
+                        <div class="edit-book">
+                            <a href="{{ path('edit_get', {'idBooks': book.idBooks}) }}">
+                                <img src="{{ asset('img/edit.png') }}" width="42" height="42"
+                                     style="right: 10px;position: inherit;vertical-align: top;"/>
+                            </a>
+                        </div>
+                    {% endif %}
+                    {% if favoriteBooks is defined and favoriteBooks is not null %}
+                        <div class="favorite-flag">
+                            {% if book.idBooks in favoriteBooks %}
+                                <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}"
+                                      data-value="Y">
                                 <i class="fa fa-star"></i>
                             </span>
-                        {% else %}
-                            <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}" data-value="N">
-                                <i class="fa fa-star-o"></i>
+                            {% else %}
+                                <span class="favorite-flag__value" data-book-id="{{ book.idBooks|escape }}"
+                                      data-value="N">
+                                <i class="fa fa-star-o" aria-hidden="true"></i>
                             </span>
-                        {% endif %}
-                    </div>
-                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if user is defined and user is not null %}
+                <div class="circle">
+                    <h2>
+                        <a href="{{ path('reader', { 'bookId': book.idBooks}) }}"
+                           target="_blank">{{ book.title|escape }}
+                        </a>
+                    </h2>
+                </div>
+            {% else %}
+            <div class="card-header">
+                <h2 class="book-title">{{ book.title|escape }}</h2>
             </div>
-        {% endif %}
+            {% endif %}
 
+            {% if book.description is not empty %}
+                <div class="book-description">
+                    <p class="card-text"><b>Аннотация: </b>{{ book.description|u.truncate(125, '...', false) }}</p>
+                    {% if 'djvu' in book.url %}
+                        <p class="card-text"><b>Тип файла: </b>{{ 'djvu'|escape }}</p>
+                    {% endif %}
+                    {% if 'pdf' in book.url %}
+                        <p class="card-text"><b>Тип файла: </b>{{ 'pdf'|escape }}</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <ul class="list-group list-group-flush">
+
+                {% if book.author.count > 1 %}
+                    <li class="list-group-item"><b>Авторы: </b>
+                        {% for author in book.author %}
+                            {{ author.nameAuthor|escape }}
+                            <br />
+                        {% endfor %}
+                    </li>
+                {% else %}
+                    <li class="list-group-item"><b>Автор: </b>
+                        {% for author in book.author %}
+                            {{ author.nameAuthor|escape }}
+                        {% endfor %}
+                    </li>
+                {% endif %}
+                <li class="list-group-item"><b>Страниц: </b>{{ book.page|escape }}</li>
+                <li class="list-group-item"><b>Год: </b>{{ book.year|escape }}</li>
+                <li class="list-group-item"><b>Город: </b>{{ book.city.city|escape }}</li>
+
+                {% if book.publishingHouse.count > 1 %}
+                    <li class="list-group-item"><b>Издательства: </b>
+                        {% for publishingHouse in book.publishingHouse %}
+                            {{ publishingHouse.namePublishingHouse|escape }}
+                            <br />
+                        {% endfor %}
+                    </li>
+                {% else %}
+                    <li class="list-group-item"><b>Издательство: </b>
+                        {% for publishingHouse in book.publishingHouse %}
+                            {{ publishingHouse.namePublishingHouse|escape }}
+                        {% endfor %}
+                    </li>
+                {% endif %}
+                <li class="list-group-item"><b>Вид издательства: </b>{{ book.typePh.nameTypePh|escape }}</li>
+                {% if book.parent is defined and book.parent is not null %}
+                    <li class="list-group-item"><b>Категория: </b>{{ book.parent.nameCategory|escape }}</li>
+                {% endif %}
+                <li class="list-group-item"><b>Средняя оценка: </b>{{ book.averageRating|escape }} / 5</li>
+            </ul>
+            {% if user is defined and user is not null %}
+                <div class="book-actions">
+                    <a href="{{ path('rating_list', {'bookId': book.idBooks}) }}">Отзывы</a>
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endfor %}
 <script src="{{ asset('js/favoritebookscontroller.js') }}"></script>
