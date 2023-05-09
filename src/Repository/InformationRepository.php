@@ -5,9 +5,17 @@ namespace App\Repository;
 
 
 use App\Entity\Information;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class InformationRepository extends EntityRepository {
+class InformationRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Information::class);
+    }
+
     public function getInformation(int $userId, int $bookId): ?Information{
 
         $query="SELECT * FROM `information` WHERE `user`= ? and `book`= ?";

@@ -10,11 +10,20 @@ use App\Entity\Category;
 use App\Entity\City;
 use App\Entity\PublishingHouse;
 use App\Entity\TypePh;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\ManagerRegistry;
 
-class BooksRepository extends EntityRepository {
+class BooksRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Books::class);
+    }
 
     public function getBooks(?int $categories = null, int $offset = 0, int $limit = 10) : array {
         $books = array();
@@ -228,7 +237,7 @@ class BooksRepository extends EntityRepository {
             LEFT JOIN type_ph on type_ph.id_type_ph = books.id_type_ph
             LEFT JOIN publishing_house on publishing_house.id_publishing_house = books.id_publishing_house
             LEFT JOIN city on city.id_city = books.id_city
-            WHERE books.title LIKE :q OR author.name_author LIKE :q OR type_ph.name_type_ph LIKE :q
+            WHERE books.title LIKE :q OR author.name_author LIKE :q OR books.description LIKE :q
             ORDER BY books.title LIMIT 30";
 
         $statement = $this->getEntityManager()->getConnection()->prepare($query);
@@ -316,12 +325,6 @@ class BooksRepository extends EntityRepository {
         $city->setIdCity($dbBook['id_city']);
         $city->setCity($dbBook['city']);
         $book->setCity($city);
-
-        if (isset($dbBook['avg'])) {
-            $book->setAverageRating((int) $dbBook['avg']);
-        } else {
-            $book->setAverageRating(0);
-        }
 
         return $book;
     }

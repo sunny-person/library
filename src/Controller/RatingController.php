@@ -31,6 +31,9 @@ class RatingController extends AbstractController {
      */
     public function list(int $bookId): Response {
         $user = $this->session->get('user');
+        if (!is_null($response = $this->checkAuth())) {
+            return $response;
+        }
         $book = $this->getDoctrine()->getRepository(Books::class)->find($bookId);
 
         $ratingRepository = $this->getDoctrine()->getRepository(Rating::class);
@@ -121,6 +124,9 @@ class RatingController extends AbstractController {
         }
 
         $user = $this->session->get('user');
+        if (!is_null($response = $this->checkAuth())) {
+            return $response;
+        }
         if ($rating->getUser()->getIdUsers() !== $user['id_users']) {
             return $this->redirectToRoute('rating_show', ['bookId' => $bookId, 'ratingId' => $ratingId]);
         }

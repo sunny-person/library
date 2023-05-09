@@ -43,7 +43,7 @@ class ReaderController extends AbstractController {
         $bookFileExt = pathinfo($book->getUrl(), PATHINFO_EXTENSION);
         if ($bookFileExt === 'pdf') {
             return $this->render(
-                    'reader/reader.html.twig',
+                'reader/pdf_reader_new.html.twig',
                     array(
                             'user' => $user,
                             'book' => $book
@@ -51,7 +51,7 @@ class ReaderController extends AbstractController {
             );
         } else if ($bookFileExt === 'djvu') {
             return $this->render(
-                    'reader/djvu.reader.html.twig',
+                    'reader/djvu.reader_new.html.twig',
                     array(
                             'user' => $user,
                             'book' => $book,

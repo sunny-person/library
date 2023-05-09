@@ -1,6 +1,6 @@
 let djvuState = {}
 
-djvuState.Init = function(djvu, currentPage, zoom, userInfoController) {
+djvuState.Init = function (djvu, currentPage, zoom, userInfoController) {
     this.djvu = djvu;
     this.currentPage = currentPage;
     this.zoom = zoom;
@@ -8,8 +8,10 @@ djvuState.Init = function(djvu, currentPage, zoom, userInfoController) {
 }
 
 const ENTER_KEY_CODE = 13;
+const LEFT_KEY_CODE = 37;
+const RIGHT_KEY_CODE = 39;
 
-window.onload = async function() {
+window.onload = async function () {
     //переход на предыдущую страницу
     document.getElementById('go_previous').addEventListener('click', (e) => {
         if (djvuState.djvu == null || djvuState.currentPage === 1) return;
@@ -28,6 +30,34 @@ window.onload = async function() {
         let button = e.currentTarget;
         render_save(djvuState.currentPage, button);
 
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === RIGHT_KEY_CODE) {
+            if (djvuState.djvu == null || djvuState.currentPage >= djvuState.djvu.getPagesQuantity())
+                return;
+            djvuState.currentPage += 1;
+            document.getElementById("current_page").value = djvuState.currentPage;
+            e.preventDefault();
+            render().then(async () => {
+                await djvuState.userInfoController.saveUserInformation(djvuState.currentPage);
+            }).catch(reason => {
+                console.warn(reason.message);
+            });
+
+        }
+        if (e.keyCode === LEFT_KEY_CODE) {
+            if (djvuState.djvu == null || djvuState.currentPage === 1) return;
+
+            djvuState.currentPage -= 1;
+            document.getElementById("current_page").value = djvuState.currentPage;
+            e.preventDefault();
+            render().then(async () => {
+                await djvuState.userInfoController.saveUserInformation(djvuState.currentPage);
+            }).catch(reason => {
+                console.warn(reason.message);
+            });
+        }
     });
 
     //для набора номера страницы вручную
@@ -50,25 +80,29 @@ window.onload = async function() {
     });
 
     //масштабирование
-    document.getElementById('zoom_in').addEventListener('click', (e) => {
-        if (djvuState.djvu == null) return;
-        djvuState.zoom += 0.25;
-        let button = e.currentTarget;
-        button.disabled = true;
-        render().then(response => {
-            button.disabled = false;
-        }).catch(reason => { console.warn(reason.message); });
-    });
+    // document.getElementById('zoom_in').addEventListener('click', (e) => {
+    //     if (djvuState.djvu == null) return;
+    //     djvuState.zoom += 0.25;
+    //     let button = e.currentTarget;
+    //     button.disabled = true;
+    //     render().then(response => {
+    //         button.disabled = false;
+    //     }).catch(reason => {
+    //         console.warn(reason.message);
+    //     });
+    // });
 
-    document.getElementById('zoom_out').addEventListener('click', (e) => {
-        if (djvuState.djvu == null) return;
-        djvuState.zoom -= 0.25;
-        let button = e.currentTarget;
-        button.disabled = true;
-        render().then(response => {
-            button.disabled = false;
-        }).catch(reason => { console.warn(reason.message); });
-    });
+    // document.getElementById('zoom_out').addEventListener('click', (e) => {
+    //     if (djvuState.djvu == null) return;
+    //     djvuState.zoom -= 0.25;
+    //     let button = e.currentTarget;
+    //     button.disabled = true;
+    //     render().then(response => {
+    //         button.disabled = false;
+    //     }).catch(reason => {
+    //         console.warn(reason.message);
+    //     });
+    // });
 
     await go();
 }
@@ -79,7 +113,9 @@ function render_save(page, button) {
     render().then(async () => {
         await djvuState.userInfoController.saveUserInformation(djvuState.currentPage);
         button.disabled = false;
-    }).catch(reason => { console.warn(reason.message); });
+    }).catch(reason => {
+        console.warn(reason.message);
+    });
 }
 
 async function render() {
@@ -94,10 +130,10 @@ async function render() {
     canvas.width = imageData.width / djvuState.zoom;
     canvas.height = imageData.height / djvuState.zoom;
 
-    canvas.style.width = '800px';
-    canvas.style.height = '900px';
+    canvas.style.width = imageData.width / djvuState.zoom + 'px';
 
     ctx.putImageData(imageData, 0, 0);
+    // ctx.drawImage(canvas, 0, 0, canvas.width/djvuState.zoom, canvas.width/djvuState.zoom);
 
     document.querySelector('#page_num').textContent = djvuState.currentPage;
 }

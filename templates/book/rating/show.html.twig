@@ -1,20 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <h3>Отзыв на книгу "{{ rating.book.title|escape }}"</h3>
-        <div class="card">
-            <div class="card-header">
-                {{ rating.user.fullName|escape }}
-            </div>
-            <div class="card-body">
+    <section class="reviews">
+        <h2 class="title">Отзыв на книгу "{{ rating.book.title|escape }}"</h2>
+        <div class="box-container">
+            <div class="box">
+                <p class="card-header">
+                    {{ rating.user.fullName|escape }}
+                </p>
                 <p class="card-text">{{ rating.comment|escape }}</p>
-            </div>
-            <div class="card-footer">
-                <span>Оценка {{ rating.value }} / 5</span>
+                <div class="card-footer">
+                    <p>Оценка: {{ rating.value }} / 5</p>
+                    <div class="stars">
+                        {% for i in  1.. rating.value %}
+                            <i class="fa fa-star"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+                <p align="left"><a href="{{ path('rating_list', {'bookId': rating.book.idBooks}) }}">
+                        &#8678; Вернуться в список отзывов</a></p>
             </div>
         </div>
-        <a href="{{ path('rating_list', {'bookId': rating.book.idBooks}) }}">
-            &#8678; список отзывов</a>
-    </div>
+    </section>
 {% endblock %}

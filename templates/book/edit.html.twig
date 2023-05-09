@@ -3,156 +3,112 @@
 {% block title %}Редактирование{% endblock %}
 
 {% block body %}
-<div class="pageAdd">
+    <section class="checkout">
+        <form method="POST" action="" enctype="multipart/form-data">
+            <h3>Редактируем книгу "{{ book.title }}"</h3>
 
-{% if errorMessage is defined %}
-    <h4 style="color: #ff4332;">{{ errorMessage }}</h4>
-{% endif %}
+            {% if errorMessage is defined and errorMessage is not null %}
+                <p class="empty">{{ errorMessage }}</p>
+            {% endif %}
 
-<h2>Редактируем</h2>
-<div class="tab-wrapper">
-
-    <ul class="tab-menu">
-    </ul>
-
-    <div class="tab-content">
-        <div>
-
-            <form method = "POST" action= "" enctype="multipart/form-data">
-
-                <div class="group">
-                    <label for="name"> Название книги: </label>
-                    <br><br>
+            <div class="flex">
+                <div class="inputBox">
+                    <span>Название книги:</span>
                     <input type="text" name="title" value="{{ book.title }}"/>
                 </div>
 
-                <div class="group">
-                    <label for="name"> Описание к документу: </label>
-                    <br><br>
+                <div class="inputBox">
+                    <span>Описание к документу:</span>
                     <input type="text" name="description" value="{{ book.description }}"/>
                 </div>
 
-                <div class="group">
-                    <label for="name">Место расположения: {{ book.url }}</label>
-                    <br><br>
-                    <input type="file" name="URL" />
+                <div class="inputBox">
+                    <span>Место расположения: {{ book.url }}</span>
+                    <input type="file" name="URL"/>
                 </div>
 
-                <div class="group">
-                    <label for="name"> Количество страниц: </label>
-                    <br><br>
+                <div class="inputBox">
+                    <span> Количество страниц: </span>
                     <input type="text" name="page" value="{{ book.page }}"/>
                 </div>
 
-                <div class="group">
-                    <label for="name"> Год: </label>
-                    <br><br>
+                <div class="inputBox">
+                    <span> Год: </span>
                     <input type="text" name="year" value="{{ book.year }}"/>
                 </div>
 
-                <div class="group">
-                    <label for = "name_author">Автор: </label>
-                    <br><br>
-                    <select name="name_author">
+                <div class="inputBox">
+                    <span>Автор: </span>
+                    <select name="name_author[]" multiple required>
                         {% for author in authors %}
-                            <option
-                                    value="{{ author.idAuthor }}"
-                                    {% if author.idAuthor == book.author.idAuthor %}
-                                        selected
-                                    {% endif %}
-                            >
+                            <option value="{{ author.idAuthor }}"
+                                    {% if author.idAuthor in selectedAuthors %}selected{% endif %}>
                                 {{ author.nameAuthor }}
                             </option>
-
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="group">
-                    <label for = "city">Город: </label>
-                    <br><br>
+                <div class="inputBox">
+                    <span>Город: </span>
                     <select name="city">
-                    {% for city in cities %}
-                        <option
-                                value="{{ city.idCity }}"
-                                {% if city.idCity == book.city.idCity %}
-                                    selected
-                                {% endif %}
-                        >
-                            {{ city.city }}
-                        </option>
-                    {% endfor %}
+                        {% for city in cities %}
+                            <option value="{{ city.idCity }}"
+                                    {% if city.idCity == book.city.idCity %}selected{% endif %}>
+                                {{ city.city }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </div>
 
-                <div class="group">
-                    <label for = "ph">Издательство: </label>
-                    <br><br>
-                    <select name="ph">
+                <div class="inputBox">
+                    <span>Издательство: </span>
+                    <select name="ph[]" multiple required>
                         {% for ph in publishingHouses %}
-                            <option
-                                    value="{{ ph.idPublishingHouse }}"
-                                    {% if ph.idPublishingHouse == book.publishingHouse.idPublishingHouse %}
-                                        selected
-                                    {% endif %}
-                            >
+                            <option value="{{ ph.idPublishingHouse }}"
+                                    {% if ph.idPublishingHouse in selectedPublishingHouses %}selected{% endif %}>
                                 {{ ph.namePublishingHouse }}
                             </option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="group">
-                    <label for = "type_ph">Тип издательства: </label>
-                    <br><br>
+                <div class="inputBox">
+                    <span>Тип издательства: </span>
                     <select name="type_ph">
                         {% for typePh in typePhs %}
-                            <option
-                                    value="{{ typePh.idTypePh }}"
-                                    {% if typePh.idTypePh == book.typePh.idTypePh %}
-                                        selected
-                                    {% endif %}
-                            >
+                            <option value="{{ typePh.idTypePh }}"
+                                    {% if typePh.idTypePh == book.typePh.idTypePh %}selected{% endif %}>
                                 {{ typePh.nameTypePh }}
                             </option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="group">
-                    <label for = "category">Категория: </label>
-                    <br><br>
+                <div class="inputBox">
+                    <span>Категория: </span>
                     <select name="category">
                         {% for category in categories %}
-                            <option
-                                    value="{{ category.idCategory }}"
-                                    {% if category.idCategory == book.parent.idCategory %}
-                                        selected
-                                    {% endif %}
-                            >
+                            <option value="{{ category.idCategory }}"
+                                    {% if book.parent is defined and book.parent is not null and category.idCategory ==book.parent.idCategory %}selected{% endif %}>
                                 {{ category.nameCategory }}
                             </option>
                         {% endfor %}
                     </select>
                 </div>
+                <div class="inputBox">
+                    <input type="submit" id="save" name="save" value="Сохранить" class="btn-custom">
+                </div>
+                <div class="inputBox">
+                    <input type="submit" id="del" name="del" value="Удалить книгу" class="delete-btn-custom">
+                </div>
+            </div>
+        </form>
 
-                <input type="submit" id="save" name="save" value="Сохранить" class="button buttonBlue">
-                <br><br>
-
-                <input type="submit" id="del" name="del" value="Удалить книгу" class="button buttonBluedel">
-            </form>
-        </div>
-
-    </div>
-
-</div>
-
-{% block javascripts %}
-<!--<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>-->
-<script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
-<script src="{{ asset('js/script.js') }}"></script>
+    </section>
 {% endblock %}
 
-</div>
-
+{% block javascripts %}
+    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
 {% endblock %}

@@ -1,16 +1,15 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div id="leftCol">
-        {{ render('/menu/categories') }}
+    <div class="products">
+        <h1 class="title">Результаты поиска</h1>
+        {% if message is defined and message is not null %}
+            <p class="empty">{{ message|escape }}</p>
+        {% endif %}
+        {% if books is defined and books is not null and books is not empty %}
+            <div class="box-container">
+                {% include 'book/list.html.twig' with {'books': books, 'user': user, 'favoriteBooks': favoriteBooks} %}
+            </div>
+        {% endif %}
     </div>
-    {% if message is defined and message is not null %}
-        <span>{{ message|escape }}</span>
-    {% endif %}
-    {% if books is defined and books is not null and books is not empty %}
-    <article>
-        {% include 'book/list.html.twig' with {'books': books, 'user': user} %}
-    </article>
-    <br />
-    {% endif %}
 
 {% endblock %}

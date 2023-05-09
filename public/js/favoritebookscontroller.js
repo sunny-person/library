@@ -1,4 +1,4 @@
-const FavoriteBooksController = function(userId) {
+const FavoriteBooksController = function (userId) {
     this.userId = userId;
 
     const favoriteFlags = document.querySelectorAll('.favorite-flag__value');
@@ -13,7 +13,7 @@ const FavoriteBooksController = function(userId) {
     }
 }
 
-FavoriteBooksController.prototype.addToFavorites = async function(e) {
+FavoriteBooksController.prototype.addToFavorites = async function (e) {
     const favoriteFlag = e.currentTarget;
     const userId = this.userId;
 
@@ -34,12 +34,13 @@ FavoriteBooksController.prototype.addToFavorites = async function(e) {
         const icon = favoriteFlag.querySelector('.fa.fa-star-o');
         icon.classList.remove('fa-star-o');
         icon.classList.add('fa-star');
+        favoriteFlag.onclick = this.removeFromFavorites.bind(this);
     } catch (e) {
         console.warn(e.message);
     }
 }
 
-FavoriteBooksController.prototype.removeFromFavorites = async function(e) {
+FavoriteBooksController.prototype.removeFromFavorites = async function (e) {
     const favoriteFlag = e.currentTarget;
     const userId = this.userId;
 
@@ -60,6 +61,7 @@ FavoriteBooksController.prototype.removeFromFavorites = async function(e) {
         const icon = favoriteFlag.querySelector('.fa.fa-star');
         icon.classList.remove('fa-star');
         icon.classList.add('fa-star-o');
+        favoriteFlag.onclick = this.addToFavorites.bind(this);
     } catch (e) {
         console.warn(e.message);
     }

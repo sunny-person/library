@@ -9,6 +9,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OneToMany;
 
 /**
  * @Entity(repositoryClass="App\Repository\BooksRepository")
@@ -31,8 +36,12 @@ class Books
      */
     private $description;
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Author")
-     * @ORM\JoinColumn(name="id_author", referencedColumnName="id_author")
+     * Many Users have Many Groups.
+     * @ManyToMany(targetEntity="App\Entity\Author")
+     * @JoinTable(name="books_author",
+     *      joinColumns={@JoinColumn(name="id_books", referencedColumnName="id_books")},
+     *      inverseJoinColumns={@JoinColumn(name="id_author", referencedColumnName="id_author")}
+     *      )
      */
     private $author;
     /**
@@ -44,25 +53,25 @@ class Books
      */
     private $page;
     /**
-     * @Column(name="parent", type="integer")
      * @ORM\ManyToOne(targetEntity="App\Entity\Category")
-     * @ORM\JoinColumn(name="category", referencedColumnName="id_category")
+     * @ORM\JoinColumn(name="parent", referencedColumnName="id_category")
      */
     private $parent;
     /**
-     * @Column(name="id_publishing_house", type="integer")
-     * @ORM\ManyToOne(targetEntity="App\Entity\PublishingHouse")
-     * @ORM\JoinColumn(name="id_publishing_house", referencedColumnName="id_publishing_house")
+     * Many Users have Many Groups.
+     * @ManyToMany(targetEntity="App\Entity\PublishingHouse")
+     * @JoinTable(name="books_publishing_house",
+     *      joinColumns={@JoinColumn(name="id_books", referencedColumnName="id_books")},
+     *      inverseJoinColumns={@JoinColumn(name="id_publishing_house", referencedColumnName="id_publishing_house")}
+     *      )
      */
     private $publishingHouse;
     /**
-     * @Column(name="id_type_ph", type="integer")
      * @ORM\ManyToOne(targetEntity="App\Entity\TypePh")
      * @ORM\JoinColumn(name="id_type_ph", referencedColumnName="id_type_ph")
      */
     private $typePh;
     /**
-     * @Column(name="id_city", type="integer")
      * @ORM\ManyToOne(targetEntity="App\Entity\City")
      * @ORM\JoinColumn(name="id_city", referencedColumnName="id_city")
      */
@@ -73,9 +82,9 @@ class Books
     private $year;
 
     /**
-     * @var ?int $averageRating
+     * @OneToMany(targetEntity="App\Entity\Rating", mappedBy="book")
      */
-    private $averageRating;
+    private $ratings;
 
     /**
      * @return mixed
@@ -132,7 +141,11 @@ class Books
     }
 
     public function getAverageRating(): ?int {
-        return $this->averageRating;
+        if (!isset($this->ratings) || $this->ratings->count() <= 0) {
+            return 0;
+        }
+        $ratingSum = array_reduce($this->ratings->toArray(), fn ($c, $r) => $c + $r->getValue());
+        return intdiv($ratingSum, $this->ratings->count());
     }
 
     /**
@@ -255,7 +268,4 @@ class Books
         $this->year = $year;
     }
 
-    public function setAverageRating(?int $averageRating): void {
-        $this->averageRating = $averageRating;
-    }
 }

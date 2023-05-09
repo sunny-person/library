@@ -1,21 +1,25 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div id="leftCol">
-        {{ render('/menu/categories') }}
-    </div>
-    <article>
-        {% if breadcrumbs is not null %}
-            {{ breadcrumbs|raw }}
-        {% endif %}
-        {% if books is null or books is empty %}
-            <p>В данном разделе книги отсутствуют!</p>
-        {% else %}
-            {% include 'book/list.html.twig' with {'books': books, 'user': user, 'favoriteBooks': favoriteBooks} %}
+
+    <main class="main">
+        <article class="products">
+            <h1 class="title">Библиотека</h1>
+
+            {% if breadcrumbs is not null %}
+                {{ breadcrumbs|raw }}
+            {% endif %}
+
+            {% if books is null or books is empty %}
+                <p class="empty">В данном разделе книги отсутствуют!</p>
+            {% else %}
+                <div class="box-container">
+                    {% include 'book/list.html.twig' with {'books': books, 'user': user, 'favoriteBooks': favoriteBooks} %}
+                </div>
+            {% endif %}
             {% if pagination is not null %}
                 {{ pagination|raw }}
             {% endif %}
-        {% endif %}
-    </article>
-    <br />
+        </article>
+    </main>
 
 {% endblock %}

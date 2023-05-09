@@ -1,27 +1,33 @@
 {% extends 'base.html.twig' %}
+
+{% block title %}Редактирование{% endblock %}
+
 {% block body %}
     <div class="pageAdd">
+        <h1 class="title">Редактирование</h1>
 
-        <h2>Редактирование</h2>
+        {% if errorMessage is defined and errorMessage is not null %}
+            <p class="empty">{{ errorMessage }}</p>
+        {% endif %}
+
         <div class="tab-wrapper">
-
-        <ul class="tab-menu">
-            <li class="action">Авторы</li>
-            <li>Категории</li>
-            <li>Города</li>
-            <li>Издательские дома</li>
-            <li>Типы книг</li>
-        </ul>
+            <ul class="tab-menu">
+                <li class="active">Авторы</li>
+                <li>Категории</li>
+                <li>Города</li>
+                <li>Издательские дома</li>
+                <li>Типы книг</li>
+            </ul>
 
             <div class="tab-content">
-                <div class="group">
+                <div class="box-container">
                     <table class="table table-bordered">
                         <thead>
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Имя</th>
-                                <th scope="col">Действие</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Имя</th>
+                            <th scope="col">Действие</th>
+                        </tr>
                         </thead>
                         <tbody>
                         {% if authors is defined and authors is not null %}
@@ -29,7 +35,8 @@
                                 <tr>
                                     <th scope="row">{{ author.idAuthor }}</th>
                                     <td>{{ author.nameAuthor }}</td>
-                                    <td><a href="{{ path('author_edit', {'authorId': author.idAuthor}) }}" class="btn edit-btn">Редактировать</a></td>
+                                    <td><a href="{{ path('author_edit', {'authorId': author.idAuthor}) }}"
+                                           class="btn-custom">Редактировать</a></td>
                                 </tr>
                             {% endfor %}
                         {% endif %}
@@ -37,7 +44,7 @@
                     </table>
                 </div>
 
-                <div class="group">
+                <div class="box-container">
                     <table class="table table-bordered">
                         <thead>
                         <tr>
@@ -51,11 +58,12 @@
                         {% if categories is defined and categories is not null %}
                             {% for category in categories %}
                                 <tr>
-                                    <th scope="row">{{ category.idCategory }}</th>
+                                    <td>{{ category.idCategory }}</td>
                                     <td>{{ category.nameCategory }}</td>
                                     <td>{{ category.parent }}</td>
                                     <td>
-                                        <a href="{{ path('category_edit', {'categoryId': category.idCategory}) }}" class="btn edit-btn">
+                                        <a href="{{ path('category_edit', {'categoryId': category.idCategory}) }}"
+                                           class="btn-custom">
                                             Редактировать
                                         </a>
                                     </td>
@@ -66,7 +74,7 @@
                     </table>
                 </div>
 
-                <div class="group">
+                <div class="box-container">
                     <table class="table table-bordered">
                         <thead>
                         <tr>
@@ -82,7 +90,8 @@
                                     <th scope="row">{{ city.idCity }}</th>
                                     <td>{{ city.city }}</td>
                                     <td>
-                                        <a href="{{ path('city_edit', {'cityId': city.idCity}) }}" class="btn edit-btn">Редактировать</a></td>
+                                        <a href="{{ path('city_edit', {'cityId': city.idCity}) }}" class="btn-custom">Редактировать</a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         {% endif %}
@@ -90,7 +99,7 @@
                     </table>
                 </div>
 
-                <div class="group">
+                <div class="box-container">
                     <table class="table table-bordered">
                         <thead>
                         <tr>
@@ -106,7 +115,8 @@
                                     <th scope="row">{{ ph.idPublishingHouse }}</th>
                                     <td>{{ ph.namePublishingHouse }}</td>
                                     <td>
-                                        <a href="{{ path('publishing_house_edit', {'publishingHouseId': ph.idPublishingHouse}) }}" class="btn edit-btn">Редактировать</a></td>
+                                        <a href="{{ path('publishing_house_edit', {'publishingHouseId': ph.idPublishingHouse}) }}"
+                                           class="btn-custom">Редактировать</a></td>
                                 </tr>
                             {% endfor %}
                         {% endif %}
@@ -114,7 +124,7 @@
                     </table>
                 </div>
 
-                <div class="group">
+                <div class="box-container">
                     <table class="table table-bordered">
                         <thead>
                         <tr>
@@ -130,7 +140,8 @@
                                     <th scope="row">{{ phType.idTypePh }}</th>
                                     <td>{{ phType.nameTypePh }}</td>
                                     <td>
-                                        <a href="{{ path('type_ph_edit', {'typePhId': phType.idTypePh}) }}" class="btn edit-btn">Редактировать</a></td>
+                                        <a href="{{ path('type_ph_edit', {'typePhId': phType.idTypePh}) }}"
+                                           class="btn-custom">Редактировать</a></td>
                                 </tr>
                             {% endfor %}
                         {% endif %}
@@ -140,11 +151,11 @@
 
             </div>
         </div>
+    </div>
+{% endblock %}
 
-    {% block javascripts %}
-        <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
-        <script src="{{ asset('js/script.js') }}"></script>
-    {% endblock %}
-
-</div>
+{% block javascripts %}
+    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
+    <script src="{{ asset('js/header_script.js') }}"></script>
 {% endblock %}

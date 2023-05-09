@@ -1,29 +1,27 @@
- <div class="page-navigation">
-        {% if pagination is not null %}
+<nav class="text-center mt-5">
+    {% if pagination is not null %}
+        <ul class="pagination pagination-lg justify-content-center">
             {% if pagination.currentPage > 1 %}
-                <div class="page-item">
-                    <a href="/?page=1" title="Первая страница">&laquo;</a>
-                </div>
-                <div class="page-item">
-                    <a href="{{ pagination.pageUrl }}/?page={{ pagination.prevPage|escape }}">{{ pagination.prevPage|escape }}</a>
-                </div>
+                <li class="page-item"><a class="page-link" href="/?page=1" title="Первая страница">Первая</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="{{ pagination.pageUrl }}/?page={{ pagination.prevPage|escape }}">
+                        {{ pagination.prevPage|escape }}</a>
+                </li>
             {% endif %}
-            <div class="page-item">
-                <a href="#">{{ pagination.currentPage|escape }}</a>
-            </div>
+            <li class="page-item active">
+                <a class="page-link" href="#">{{ pagination.currentPage|escape }}</a>
+            </li>
             {% if pagination.hasNextPage %}
-                <div class="page-item">
-                    <a href="{{ pagination.pageUrl }}/?page={{ pagination.nextPage|escape }}">{{ pagination.nextPage|escape }}</a>
-                </div>
-                <div class="page-item">
-                    <a href="{{ pagination.pageUrl }}/?page={{ pagination.lastPage|escape }}" title="Последняя страница">&raquo;</a>
-                </div>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="{{ pagination.pageUrl }}/?page={{ pagination.nextPage|escape }}">{{ pagination
+                        .nextPage|escape }}</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{{ pagination.pageUrl }}/?page={{ pagination.lastPage|escape }}"
+                       title="Последняя страница">Последняя</a>
+                </li>
             {% endif %}
-            <div class="page-item">
-                <span>Страница {{ pagination.currentPage }} из {{ pagination.lastPage }}</span>
-            </div>
-        {% endif %}
-    </div>
-
-<link rel="stylesheet" href="{{ asset('css/pagination.css') }}">
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        </ul>
+    {% endif %}
+</nav>

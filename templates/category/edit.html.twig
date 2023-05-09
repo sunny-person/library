@@ -1,44 +1,59 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="container">
-    {% if error_message is defined and error_message is not null %}
-        <span class="text-danger">{{ error_message|escape }}</span>
-    {% endif %}
-    {% if category is defined and category is not null %}
-        <form method = "POST" action= "{{ path('category_edit_post', {'categoryId': category.idCategory}) }}" class="frm">
-            <div class="group">
-                <label for="name_category">Название категории</label>
-                <br><br>
-                <input type="text" id="name_category" name="name_category" value="{{ category.nameCategory|escape }}" placeholder=""/>
-                <span class="highlight"></span><span class="bar"></span>
-                <div class="group">
-                    <label for="parent">Родительская категория*:</label>
-                    <br><br>
-                    <select id="parent" name="parent">
-                        <option value="0">
-                            Не выбран
-                        </option>
-                        {% for parentCategory in allCategories %}
-                            {% if parentCategory.parent == 0 %}
-                                <option
-                                        value="{{ parentCategory.idCategory }}"
-                                        {% if parentCategory.idCategory == category.parent %}
-                                            selected
-                                        {% endif %}
-                                >
-                                    {{ parentCategory.nameCategory }}
-                                </option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
+    <section class="checkout">
+        {% if error_message is defined and error_message is not null %}
+            <p class="empty">{{ error_message|escape }}</p>
+            <h4 align="left">
+                <a href="{{ path('admin_index') }}">&#8678; Вернуться в список для редактирования</a>
+            </h4>
+        {% endif %}
+
+        {% if category is defined and category is not null %}
+            <form method="POST" action="{{ path('category_edit_post', {'categoryId': category.idCategory}) }}"
+                  class="frm">
+                <h3>Редактируем категорию "{{ category.nameCategory|escape }}".</h3>
+                <div class="flex">
+                    <div class="inputBox">
+                        <span>Название категории:</span>
+                        <input type="text" id="name_category" name="name_category"
+                               value="{{ category.nameCategory|escape }}" placeholder=""/>
+                        <p>
+                            <a href="{{ path('category_delete', {'categoryId': category.idCategory}) }}"
+                               class="delete-btn-custom">
+                                Удалить категорию
+                            </a>
+                        </p>
+                    </div>
+
+                    <div class="inputBox">
+                        <span>Родительская категория*:</span>
+                        <select id="parent" name="parent">
+                            <option value="0">Не выбран</option>
+                            {% for parentCategory in allCategories %}
+                                {% if parentCategory.parent == 0 %}
+                                    <option value="{{ parentCategory.idCategory }}"
+                                            {% if parentCategory.idCategory == category.parent %}selected{% endif %}>
+                                        {{ parentCategory.nameCategory }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <p class="empty">* Вы не можете удалить или изменить родителя категории, у которой есть дочерние
+                            категории.</p>
+                    </div>
+
+                    <div class="inputBox">
+                        <span> Сохранить изменения:</span>
+                        <input type="submit" id="add_category" name="add_category" value="Редактировать"
+                               class="btn-custom">
+                    </div>
                 </div>
-            </div>
-            <input type="submit" id="add_category" name="add_category" value="Редактировать" class="button buttonBlue">
-        </form>
-        <a href="{{ path('category_delete', {'categoryId': category.idCategory}) }}" class="button buttonBluedel">
-            Удалить категорию
-        </a>
-        <span>* Вы не можете удалить или изменить родителя категории, у которой есть дочерние категории.</span>
-    {% endif %}
-    </div>
+                <h4 align="end">
+                    <a href="{{ path('admin_index') }}">Вернуться в список для редактирования &#8680;</a>
+                </h4>
+            </form>
+
+        {% endif %}
+
+    </section>
 {% endblock %}

@@ -1,10 +1,9 @@
-<div class="breadcrumbs">
-    <a href="/">Главная</a>
+<ul class="breadcrumb">
+    <li><a href="/">Главная</a></li>
     {% if categories.child is not null %}
-        &#8658;
         {% if categories.parent is not null %}
-            <a href="/?category={{ categories.parent.idCategory }}">{{ categories.parent.nameCategory }}</a> &#8658;
+            <li><a href="/?category={{ categories.parent.idCategory }}">{{ categories.parent.nameCategory }}</a></li>
         {% endif %}
-        <a href="/?category={{ categories.child.idCategory }}">{{ categories.child.nameCategory }}</a>
+        <li><a href="/?category={{ categories.child.idCategory }}">{{ categories.child.nameCategory }}</a></li>
     {% endif %}
-</div>
+</ul>

@@ -4,11 +4,18 @@
 namespace App\Repository;
 
 use App\Entity\PublishingHouse;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 
 
-class PublishingHouseRepository extends EntityRepository {
+class PublishingHouseRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, PublishingHouse::class);
+    }
 
     /**
      * @return PublishingHouse[]

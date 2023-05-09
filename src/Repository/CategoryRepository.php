@@ -6,10 +6,17 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use App\Repository\Exceptions\CategoryRepositoryException;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 
-class CategoryRepository extends EntityRepository {
+class CategoryRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Category::class);
+    }
 
     private const NO_PARENT_ID = 0;
 

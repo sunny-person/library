@@ -1,54 +1,58 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <h3>Отзывы на книгу "{{ book.title }}"</h3>
-        {% if currentUserReview is not null %}
-            <div class="card">
-                <div class="card-header">
-                    Ваш отзыв
-                </div>
-                <div class="card-body">
-                    <p class="card-text">{{ currentUserReview.comment|length > 180
+    <section class="reviews">
+        <h2 class="title">Ваш отзыв на книгу "{{ book.title }}"</h2>
+        <div class="box-container">
+            {% if currentUserReview is not null %}
+                <div class="box">
+                    <p>{{ currentUserReview.comment|length > 180
                         ? currentUserReview.comment|slice(0, 180)|escape ~ '...'
-                        : currentUserReview.comment|escape
-                        }}</p>
-                    <a href="{{ path('rating_edit', {'bookId': currentUserReview.book.idBooks, 'ratingId': currentUserReview.id}) }}"
-                       class="button buttonBlue">Редактировать</a>
+                        : currentUserReview.comment|escape }}</p>
+                    <p>Оценка: {{ currentUserReview.value }} / 5</p>
+                    <div class="stars">
+                        {% for i in  1.. currentUserReview.value %}
+                            <i class="fa fa-star"></i>
+                        {% endfor %}
+                    </div>
+                    <p>
+                        <a href="{{ path('rating_edit', {'bookId': currentUserReview.book.idBooks, 'ratingId': currentUserReview.id}) }}"
+                           class="button buttonBlue">Редактировать отзыв</a></p>
                 </div>
-                <div class="card-footer">
-                    Оценка: {{ currentUserReview.value }} / 5
+
+            {% else %}
+                <div class="box">
+                    <p>Вы ещё не написали свой отзыв</p>
+                    <p><a href="{{ path('rating_new', {'bookId': book.idBooks}) }}"
+                          class="button buttonBlue">Добавить отзыв</a></p>
                 </div>
-            </div>
-        {% else %}
-            <div class="card">
-                <div class="card-header">
-                    Ваш отзыв
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="reviews">
+        <h2 class="title">Отзывы других пользователей на книгу "{{ book.title }}"</h2>
+        <div class="box-container">
+            {% for review in ratings %}
+                <div class="box">
+                    <p>{{ review.user.fullName|escape }}</p>
+                    <p class="card-text">{{ review.comment|length > 180 ? review.comment|slice(0, 180)|escape ~ '...' : review.comment|escape }}
+                        <a href="{{ path('rating_show', {'bookId': review.book.idBooks, 'ratingId': review.id}) }}">Читать
+                            полный отзыв</a>
+                    </p>
+                    <p>Оценка: {{ review.value }} / 5</p>
+                    <div class="stars">
+                        {% for i in  1.. review.value %}
+                            <i class="fa fa-star"></i>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">Вы ещё не написали свой отзыв</p>
-                    <a href="{{ path('rating_new', {'bookId': book.idBooks}) }}"
-                       class="button buttonBlue">Добавить отзыв</a>
+            {% endfor %}
+            {% if ratings is empty %}
+                <div class="box">
+                    <p>Здесь ещё нет отзывов от других пользователей...</p>
                 </div>
-            </div>
-        {% endif %}
-        <h4>Отзывы других пользователей</h4>
-        {% for review in ratings %}
-            <div class="card">
-                <div class="card-header">
-                    {{ review.user.fullName|escape }}
-                </div>
-                <div class="card-body">
-                    <p class="card-text">{{ review.comment|length > 180 ? review.comment|slice(0, 180)|escape ~ '...' : review.comment|escape }}</p>
-                    <a href="{{ path('rating_show', {'bookId': review.book.idBooks, 'ratingId': review.id}) }}">Просмотр</a>
-                </div>
-                <div class="card-footer">
-                    Оценка: {{ review.value }} / 5
-                </div>
-            </div>
-        {% endfor %}
-        {% if ratings is empty %}
-            <p>Здесь ещё нет отзывов от других пользователей...</p>
-        {% endif %}
-    </div>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}

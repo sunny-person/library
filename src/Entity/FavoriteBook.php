@@ -16,33 +16,17 @@ use Doctrine\ORM\Mapping\GeneratedValue;
  */
 class FavoriteBook {
     /**
+     * @var integer $userId
      * @Id
-     * @Column("id")
-     * @GeneratedValue
-     */
-    private $id;
-    /**
      * @Column(name="user_id", type="integer")
      */
     private $userId;
     /**
+     * @var integer $bookId
+     * @Id
      * @Column(name="book_id", type="integer")
      */
     private $bookId;
-
-    /**
-     * @return mixed
-     */
-    public function getId() {
-        return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id): void {
-        $this->id = $id;
-    }
 
     /**
      * @return mixed

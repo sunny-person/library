@@ -3,229 +3,211 @@
 {% block title %}Добавление{% endblock %}
 
 {% block body %}
-<div class="pageAdd">
+    <div class="pageAdd">
+        <h1 class="title">Добавляем</h1>
 
-    {% if errorMessage is defined %}
-        <h4 style="color: #397CC5;">{{ errorMessage }}</h4>
-    {% endif %}
+        {% if errorMessage is defined and errorMessage is not null %}
+            <p class="empty">{{ errorMessage }}</p>
+        {% endif %}
 
-    <h2>Добавляем</h2>
-    <div class="tab-wrapper">
+        <div class="tab-wrapper">
+            <ul class="tab-menu">
+                <li class="active">Книгу</li>
+                <li>Автора</li>
+                <li>Издательство</li>
+                <li>Город</li>
+                <li>Вид издательства</li>
+                <li>Категорию</li>
+            </ul>
 
-        <ul class="tab-menu">
-            <li class="active">Книгу</li>
-            <li>Автора</li>
-            <li>Издательство</li>
-            <li>Город</li>
-            <li>Вид издательства</li>
-            <li>Категорию</li>
-        </ul>
+            <div class="tab-content">
+                <div class="box-container checkout">
+                    <form method="POST" action="" enctype="multipart/form-data">
 
-        <div class="tab-content">
-            <div>
-                <form method = "POST" action= "" enctype="multipart/form-data">
+                        <div class="flex">
+                            <div class="inputBox">
+                                <span>Название книги:</span>
+                                <input type="text" name="title" placeholder="Введите название книги"/>
+                            </div>
 
-                    <div class="group">
-                        <label for="name"> Название книги: </label>
-                        <br><br>
-                        <input type="text" name="title" placeholder="Введите название книги"/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
+                            <div class="inputBox">
+                                <span>Описание к документу:</span>
+                                <input type="text" name="description" placeholder="Введите аннотацию к книге"/>
+                            </div>
 
-                    <div class="group">
-                        <label for="name"> Описание к документу: </label>
-                        <br><br>
-                        <input type="text" name="description" placeholder="Введите аннотацию к книге"/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
+                            <div class="inputBox">
+                                <span>Место расположения: </span>
+                                <input type="file" name="URL" accept=".pdf, .djvu">
+                            </div>
 
-                    <div class="group">
-                        <label>Автор: </label>
-                        <br><br>
-                        <select name="name_author">
-                            {% for author in authors %}
-                                <option
-                                        value="{{ author.idAuthor }}"
-                                >
-                                    {{ author.nameAuthor }}
-                                </option>
+                            <div class="inputBox">
+                                <span> Количество страниц: </span>
+                                <input type="text" name="page" placeholder="Количество страниц:"/>
+                            </div>
 
-                            {% endfor %}
-                                selected
-                        </select>
-                    </div>
+                            <div class="inputBox">
+                                <span> Год: </span>
+                                <input type="text" name="year" placeholder="Год: "/>
+                            </div>
 
-                    <div class="group">
-                        <label>Место расположения: </label>
-                        <br><br>
-                        <input type="file" name="URL" accept=".pdf, .djvu">
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
+                            <div class="inputBox">
+                                <span>Автор: </span>
+                                <select name="name_author[]" multiple required>
+                                    {% for author in authors %}
+                                        <option value="{{ author.idAuthor }}">
+                                            {{ author.nameAuthor }}
+                                        </option>
+                                    {% endfor %}
+                                    selected
+                                </select>
+                            </div>
 
-                    <div class="group">
-                        <label for="name"> Количество страниц: </label>
-                        <br><br>
-                        <input type="text" name="page" placeholder="Количество страниц:"/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
+                            <div class="inputBox">
+                                <span>Город: </span>
+                                <select name="city">
+                                    {% for city in cities %}
+                                        <option value="{{ city.idCity }}">
+                                            {{ city.city }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
-                    <div class="group">
-                        <label for="name"> Год: </label>
-                        <br><br>
-                        <input type="text" name="year" placeholder="Год: "/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
+                            <div class="inputBox">
+                                <span>Издательство: </span>
+                                <select name="ph[]" multiple required>
+                                    {% for ph in publishingHouses %}
+                                        <option value="{{ ph.idPublishingHouse }}">
+                                            {{ ph.namePublishingHouse }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
-                    <div class="group">
-                        <label for = "city">Город: </label>
-                        <br><br>
-                        <select name="city">
-                            {% for city in cities %}
-                                <option
-                                        value="{{ city.idCity }}"
-                                >
-                                    {{ city.city }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                            <div class="inputBox">
+                                <span>Тип издательства: </span>
+                                <select name="type_ph">
+                                    {% for typePh in typePhs %}
+                                        <option value="{{ typePh.idTypePh }}">
+                                            {{ typePh.nameTypePh }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
-                    <div class="group">
-                        <label for = "ph">Издательство: </label>
-                        <br><br>
-                        <select name="ph">
-                            {% for ph in publishingHouses %}
-                                <option
-                                        value="{{ ph.idPublishingHouse }}"
-                                >
-                                    {{ ph.namePublishingHouse }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                            <div class="inputBox">
+                                <span>Категория: </span>
+                                <select name="category">
+                                    {% for category in categories %}
+                                        <option value="{{ category.idCategory }}">
+                                            {{ category.nameCategory }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="inputBox">
+                                <input type="submit" id="add_book" name="add_book" value="Добавить"
+                                       class="btn-custom">
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
-                    <div class="group">
-                        <label for = "type_ph">Тип издательства: </label>
-                        <br><br>
-                        <select name="type_ph">
-                            {% for typePh in typePhs %}
-                                <option
-                                        value="{{ typePh.idTypePh }}"
-                                >
-                                    {{ typePh.nameTypePh }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div class="box-container checkout">
+                    <form method="POST" action="" class="frm">
+                        <div class="flex">
+                            <div class="inputBox">
+                                <input type="text" name="name_author" placeholder="Введите ФИО автора"/>
+                            </div>
+                            <div class="inputBox">
+                                <input type="submit" id="add_author" name="add_author" value="Добавить"
+                                       class="btn-custom">
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
-                    <div class="group">
-                        <label for = "ph">Категория: </label>
-                        <br><br>
-                        <select name="category">
-                            {% for category in categories %}
-                                <option
-                                        value="{{ category.idCategory }}"
-                                >
-                                    {{ category.nameCategory }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div class="box-container checkout">
+                    <form method="POST" action="">
+                        <div class="flex">
+                            <div class="inputBox">
+                                <input type="text" name="publishing_house"
+                                       placeholder="Введите название издательства"/>
+                            </div>
+                            <div class="inputBox">
+                                <input type="submit" id="add_ph" name="add_ph" value="Добавить" class="btn-custom">
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
-                    <input type="submit" id="add_book" name="add_book" value="Добавить" class="button buttonBlue">
-                </form>
+                <div class="box-container checkout">
+                    <form method="POST" action="">
+                        <div class="flex">
+                            <div class="inputBox">
+                                <input type="text" name="city" placeholder="Введите название города"/>
+                            </div>
+                            <div class="inputBox">
+                                <input type="submit" id="add_city" name="add_city" value="Добавить"
+                                       class="btn-custom">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="box-container checkout">
+                    <form method="POST" action="">
+                        <div class="flex">
+                            <div class="inputBox">
+                                <input type="text" name="type_ph" placeholder="Введите тип документа"/>
+                            </div>
+                            <div class="inputBox">
+                                <input type="submit" id="add_type_ph" name="add_type_ph" value="Добавить"
+                                       class="btn-custom">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="box-container checkout">
+                    <form method="POST" action="">
+                        <div class="flex">
+
+                            <div class="inputBox">
+                                <span>Название раздела: </span>
+                                <input type="text" name="name_category" placeholder="Введите название раздела"/>
+                            </div>
+
+
+                            <div class="inputBox">
+                                <span>Родительская категория: </span>
+                                <select name="category">
+                                    <option value="0">Не выбрана</option>
+                                    {% for category in categories %}
+                                        {% if category.parent == 0 %}
+                                            <option value="{{ category.idCategory }}">
+                                                {{ category.nameCategory }}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="inputBox">
+                                <input type="submit" id="add_category" name="add_category" value="Добавить"
+                                       class="btn-custom">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
             </div>
-
-            <div>
-                <form method = "POST" action= "" class="frm">
-                    <div class="group">
-                        <label for="name"> ФИО Автора: </label>
-                        <br><br>
-                        <input type="text" name="name_author" placeholder=""/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
-                    <input type="submit" id="add_author" name="add_author" value="Добавить" class="button buttonBlue">
-                </form>
-            </div>
-
-            <div>
-                <form method = "POST" action= "">
-                    <div class="group">
-                        <label for="name"> Наименование издательства: </label>
-                        <br><br>
-                        <input type="text" name="publishing_house" placeholder=""/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
-                    <input type="submit" id="add_ph" name="add_ph" value="Добавить" class="button buttonBlue">
-                </form>
-            </div>
-
-            <div>
-                <form method = "POST" action= "">
-                    <div class="group">
-                        <label for="name"> Город: </label>
-                        <br><br>
-                        <input type="text" name="city" placeholder=""/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
-                    <input type="submit" id="add_city" name="add_city" value="Добавить" class="button buttonBlue">
-                </form>
-            </div>
-
-            <div>
-                <form method = "POST" action= "">
-                    <div class="group">
-                        <label for="name"> Вид документа: </label>
-                        <br><br>
-                        <input type="text" name="type_ph" placeholder=""/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
-                    <input type="submit" id="add_type_ph" name="add_type_ph" value="Добавить" class="button buttonBlue">
-                </form>
-            </div>
-
-            <div>
-                <form method = "POST" action= "">
-
-                    <div class="group">
-                        <label for = "name">Название раздела: </label>
-                        <br><br>
-                        <input type="text" name="name_category" placeholder="Название раздела"/>
-                        <span class="highlight"></span><span class="bar"></span>
-                    </div>
-
-                    <div class="group">
-                            <label for = "name">Родительская категория: </label>
-                            <br><br>
-                            <select name="category">
-                                <option value="0">
-                                    Не выбран
-                                </option>
-                                {% for category in categories %}
-                                    {% if category.parent == 0 %}
-                                    <option
-                                        value="{{ category.idCategory }}"
-                                    >
-                                        {{ category.nameCategory }}
-                                    </option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                    </div>
-
-                    <input type="submit" id="add_category" name="add_category" value="Добавить" class="button buttonBlue">
-                </form>
-            </div>
-
         </div>
     </div>
+{% endblock %}
 
-    {% block javascripts %}
-{#        <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>#}
-        <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
-        <script src="{{ asset('js/script.js') }}"></script>
-    {% endblock %}
-
-</div>
-
+{% block javascripts %}
+    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
+    <script src="{{ asset('js/header_script.js') }}"></script>
 {% endblock %}

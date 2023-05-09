@@ -1,20 +1,37 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="container">
+    <section class="checkout">
         {% if error_message is defined and error_message is not null %}
-            <span class="text-danger">{{ error_message|escape }}</span>
+            <p class="empty">{{ error_message|escape }}</p>
+            <h4 align="left">
+                <a href="{{ path('admin_index') }}">&#8678; Вернуться в список для редактирования</a>
+            </h4>
         {% endif %}
+
         {% if city is defined and city is not null %}
-            <form method = "POST" action= "{{ path('city_edit_post', {'cityId': city.idCity}) }}" class="frm">
-                <div class="group">
-                    <label for="name"> Название города: </label>
-                    <br><br>
-                    <input type="text" name="city" value="{{ city.city|escape }}" placeholder=""/>
-                    <span class="highlight"></span><span class="bar"></span>
+            <form method="POST" action="{{ path('city_edit_post', {'cityId': city.idCity}) }}" class="frm">
+
+                <h3>Редактируем город "{{ city.city }}".</h3>
+                <div class="flex">
+                    <div class="inputBox">
+                        <span> Название города:</span>
+                        <input type="text" name="city" value="{{ city.city|escape }}" placeholder=""/>
+                        <p>
+                            <a href="{{ path('city_delete', {'cityId': city.idCity}) }}"
+                               class="delete-btn-custom">Удалить город</a>
+                        </p>
+                    </div>
+                    <div class="inputBox">
+                        <span> Сохранить изменения:</span>
+                        <input type="submit" id="add_city" name="add_city" value="Редактировать"
+                               class="btn-custom">
+                    </div>
                 </div>
-                <input type="submit" id="add_city" name="add_city" value="Редактировать" class="button buttonBlue">
+                <h4 align="end">
+                    <a href="{{ path('admin_index') }}">Вернуться в список для редактирования &#8680;</a>
+                </h4>
             </form>
-            <a href="{{ path('city_delete', {'cityId': city.idCity}) }}" class="button buttonBluedel">Удалить автора</a>
         {% endif %}
-    </div>
+
+    </section>
 {% endblock %}

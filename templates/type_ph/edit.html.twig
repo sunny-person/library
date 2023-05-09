@@ -1,20 +1,36 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="container">
+    <section class="checkout">
         {% if error_message is defined and error_message is not null %}
-            <span class="text-danger">{{ error_message|escape }}</span>
+            <p class="empty">{{ error_message|escape }}</p>
+            <h4 align="left">
+                <a href="{{ path('admin_index') }}">&#8678; Вернуться в список для редактирования</a>
+            </h4>
         {% endif %}
+
         {% if type_ph is defined and type_ph is not null %}
-            <form method = "POST" action= "{{ path('type_ph_edit_post', {'typePhId': type_ph.idTypePh}) }}" class="frm">
-                <div class="group">
-                    <label for="name"> Название типа документа: </label>
-                    <br><br>
-                    <input type="text" name="name_type_ph" value="{{ type_ph.nameTypePh|escape }}" placeholder=""/>
-                    <span class="highlight"></span><span class="bar"></span>
+            <form method="POST" action="{{ path('type_ph_edit_post', {'typePhId': type_ph.idTypePh}) }}" class="frm">
+                <h3>Редактируем тип документа "{{ type_ph.nameTypePh }}".</h3>
+
+                <div class="flex">
+                    <div class="inputBox">
+                        <span> Название типа документа:</span>
+                        <input type="text" name="name_type_ph" value="{{ type_ph.nameTypePh|escape }}" placeholder=""/>
+                        <p>
+                            <a href="{{ path('type_ph_delete', {'typePhId': type_ph.idTypePh}) }}"
+                               class="delete-btn-custom">Удалить тип документа</a>
+                        </p>
+                    </div>
+                    <div class="inputBox">
+                        <span> Сохранить изменения:</span>
+                        <input type="submit" id="add_type_ph" name="add_type_ph" value="Редактировать"
+                               class="btn-custom">
+                    </div>
                 </div>
-                <input type="submit" id="add_type_ph" name="add_type_ph" value="Редактировать" class="button buttonBlue">
+                <h4 align="end">
+                    <a href="{{ path('admin_index') }}">Вернуться в список для редактирования &#8680;</a>
+                </h4>
             </form>
-            <a href="{{ path('type_ph_delete', {'typePhId': type_ph.idTypePh}) }}" class="button buttonBluedel">Удалить автора</a>
         {% endif %}
-    </div>
+    </section>
 {% endblock %}

@@ -11,8 +11,15 @@ use App\Entity\City;
 use App\Entity\FavoriteBook;
 use App\Entity\PublishingHouse;
 use App\Entity\TypePh;
+use App\Repository\AuthorRepository;
+use App\Repository\BooksRepository;
+use App\Repository\CategoryRepository;
+use App\Repository\CityRepository;
 use App\Repository\FavoriteBooksRepository;
+use App\Repository\PhTypesRepository;
+use App\Repository\PublishingHouseRepository;
 use App\UI\Pagination;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,28 +34,34 @@ use Symfony\Component\Routing\Annotation\Route;
 class BookController extends AbstractController {
 
     private const ADMIN_ROLE_ID = 1;
-    private const BOOKS_PER_PAGE = 4;
+    private const BOOKS_PER_PAGE = 6;
 
-    private SessionInterface $session;
-
-    private const UPLOAD_DIR = "upload_files/";
+    private const UPLOAD_DIR = "public/upload_files/";
 
     private const ALLOWED_EXTENSIONS = array(
         'pdf',
         'djvu'
     );
 
-    public function __construct(SessionInterface $session) {
-        $this->session = $session;
+    public function __construct(
+        private SessionInterface $session,
+        private BooksRepository $booksRepository,
+        private FavoriteBooksRepository $favoriteBooksRepository,
+        private AuthorRepository $authorRepository,
+        private PublishingHouseRepository $publishingHouseRepository,
+        private CityRepository $cityRepository,
+        private PhTypesRepository $phTypesRepository,
+        private CategoryRepository $categoryRepository,
+    ) {
     }
 
     /**
-     * @Route("/book/edit/{bookId}", methods={"GET"}, name="edit_get")
+     * @Route("/book/edit/{idBooks}", methods={"GET"}, name="edit_get")
      * @param Request $request
      * @param int $bookId
      * @return Response
      */
-    public function editGet(Request $request, int $bookId): Response {
+    public function editGet(Request $request, Books $book): Response {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
@@ -59,12 +72,11 @@ class BookController extends AbstractController {
             return new RedirectResponse('/');
         }
 
-        $book = $this->getDoctrine()->getRepository(Books::class)->getBook($bookId);
-        $authors = $this->getDoctrine()->getRepository(Author::class)->getAuthors();
-        $cities = $this->getDoctrine()->getRepository(City::class)->getCities();
-        $publishingHouses = $this->getDoctrine()->getRepository(PublishingHouse::class)->getPublishingHouses();
-        $phTypes = $this->getDoctrine()->getRepository(TypePh::class)->getPhTypes();
-        $categories = $this->getDoctrine()->getRepository(Category::class)->getCategories();
+        $authors = $this->authorRepository->findAll();
+        $cities = $this->cityRepository->findAll();
+        $publishingHouses = $this->publishingHouseRepository->findAll();
+        $phTypes = $this->phTypesRepository->findAll();
+        $categories = $this->categoryRepository->findAll();
 
         return $this->render(
             'book/edit.html.twig',
@@ -75,18 +87,21 @@ class BookController extends AbstractController {
                 'publishingHouses' => $publishingHouses,
                 'typePhs' => $phTypes,
                 'categories' => $categories,
+                'selectedAuthors' => array_map(fn ($a) => $a->getIdAuthor(), $book->getAuthor()->toArray()),
+                'selectedPublishingHouses' => array_map(fn ($ph) => $ph->getIdPublishingHouse(),
+                    $book->getPublishingHouse()->toArray()),
                 'errorMessage' => $request->get('errorMessage')
             )
         );
     }
 
     /**
-     * @Route("/book/edit/{bookId}", methods={"POST"})
+     * @Route("/book/edit/{idBooks}", methods={"POST"})
      * @param Request $request
      * @param int $bookId
      * @return Response
      */
-    public function editPost(Request $request, int $bookId): Response {
+    public function editPost(Request $request, Books $book, ManagerRegistry $doctrine): Response {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
@@ -97,23 +112,30 @@ class BookController extends AbstractController {
             return new RedirectResponse('/');
         }
 
-        /** @var Books $book */
-        $book = $this->getDoctrine()->getRepository(Books::class)->getBook($bookId);
-        if (!isset($book)) {
-            return new RedirectResponse('/');
-        }
+        $em = $doctrine->getManager();
 
         $del = $request->get('del');
         if (isset($del)) {
-            $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR . $book->getUrl();
-            $result = unlink($uploadFileName);
+            $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . self::UPLOAD_DIR . $book->getUrl();
+            $result = false;
+            if (file_exists($uploadFileName)) {
+                $result = unlink($uploadFileName);
+            }
             if (!$result) {
                 return new RedirectResponse(
-                    "/book/edit/${bookId}?errorMessage=Не%20удалось%20удалить%20файл"
+                    "/book/edit/{$book->getIdBooks()}?errorMessage=Не%20удалось%20удалить%20файл"
                 );
             }
-            $this->getDoctrine()->getRepository(Books::class)->deleteBook($bookId);
-            return new RedirectResponse('/');
+
+            try {
+                $em->remove($book);
+                $em->flush();
+                return new RedirectResponse('/');
+            } catch (Exception) {
+                return new RedirectResponse(
+                    "/book/edit/{$book->getIdBooks()}?errorMessage=Не%20удалось%20удалить%20информацию%20по%20книге!"
+                );
+            }
         }
 
         $title = $request->get('title');
@@ -121,38 +143,39 @@ class BookController extends AbstractController {
         $file = $request->files->get('URL');
 
         if ($file !== null){
-            $url = $file->getClientOriginalName();
-            $extension = pathinfo($url, PATHINFO_EXTENSION);
+            $originalName = $file->getClientOriginalName();
+            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+            $newFileName = md5(pathinfo($originalName, PATHINFO_FILENAME)) . '-' . uniqid() . '.' . $extension;
         } else {
             $book->setUrl($book->getUrl());
         }
 
-        if (!empty($url)) {
+        if (!empty($newFileName)) {
             $error = false;
-            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR;
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . self::UPLOAD_DIR;
             if (!in_array($extension, self::ALLOWED_EXTENSIONS)) {
                 $error = true;
             } else if ($file->getError() !== UPLOAD_ERR_OK) {
                 $error = true;
-            } else if (file_exists($uploadDir . $url)) {
+            } else if (file_exists($uploadDir . $newFileName)) {
                 $error = true;
             }
 
             if ($error) {
                 return new RedirectResponse(
-                    "/book/edit/${bookId}?errorMessage=Не%20удалось%20обновить%20книгу"
+                    "/book/edit/{$book->getIdBooks()}?errorMessage=Не%20удалось%20обновить%20книгу"
                 );
             }
 
-            $book->setUrl($url);
+            $book->setUrl($newFileName);
         }
 
-        if (!empty($url)) {
-            $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR . $url;
+        if (!empty($newFileName)) {
+            $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . self::UPLOAD_DIR . $newFileName;
             $moveResult = move_uploaded_file($file->getPathname(), $uploadFileName);
             if ($moveResult === false) {
                 return new RedirectResponse(
-                    "/book/edit/${bookId}?errorMessage=Не%20удалось%20обновить%20файл%20книги"
+                    "/book/edit/{$book->getIdBooks()}?errorMessage=Не%20удалось%20обновить%20файл%20книги"
                 );
             }
         }
@@ -169,22 +192,32 @@ class BookController extends AbstractController {
         $book->setDescription($description);
         $book->setPage($page);
         $book->setYear($year);
-        $book->getAuthor()->setIdAuthor($authorId);
-        $book->getCity()->setIdCity($cityId);
-        $book->getPublishingHouse()->setIdPublishingHouse($phId);
-        $book->getTypePh()->setIdTypePh($phTypeId);
-        $book->getParent()->setIdCategory($categoryId);
 
-        $result = $this->getDoctrine()->getRepository(Books::class)->updateBook($book);
+        $author = $this->authorRepository->findBy(['idAuthor' => $authorId]);
+        $book->setAuthor($author);
 
-        if (!$request) {
+        $city = $this->cityRepository->find($cityId);
+        $book->setCity($city);
+
+        $publishingHouse = $this->publishingHouseRepository->findBy(['idPublishingHouse' => $phId]);
+        $book->setPublishingHouse($publishingHouse);
+
+        $typePh = $this->phTypesRepository->find($phTypeId);
+        $book->setTypePh($typePh);
+
+        $category = $this->categoryRepository->find($categoryId);
+        $book->setParent($category);
+
+        try {
+            $em->flush();
+        } catch (Exception) {
             return new RedirectResponse(
-                "/book/edit/${bookId}?errorMessage=Не%20удалось%20обновить%20книгу"
+                "/book/edit/{$book->getIdBooks()}?errorMessage=Не%20удалось%20обновить%20книгу"
             );
         }
 
         return new RedirectResponse(
-            "/book/edit/${bookId}?errorMessage=Книга%20успешно%20обновлена"
+            "/book/edit/{$book->getIdBooks()}?errorMessage=Книга%20успешно%20обновлена"
         );
     }
 
@@ -228,7 +261,7 @@ class BookController extends AbstractController {
      * @param Request $request
      * @return Response
      */
-    public function addPost(Request $request): Response {
+    public function addPost(Request $request, ManagerRegistry $doctrine): Response {
         $user = $this->session->get('user');
         if (!isset($user)) {
             return new RedirectResponse('/auth/sign');
@@ -249,24 +282,25 @@ class BookController extends AbstractController {
             $file = $request->files->get('URL');
 
             if ($file !== null){
-                $url = $file->getClientOriginalName();
-                $extension = pathinfo($url, PATHINFO_EXTENSION);
+                $originalName = $file->getClientOriginalName();
+                $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+                $newFileName = md5(pathinfo($originalName, PATHINFO_FILENAME)) . '-' . uniqid() . '.' . $extension;
             } else {
                 return new RedirectResponse(
-                    "/book/add?errorMessage=Добавьте%20файл%20книги"
+                    "/book/add?errorMessage=Добавьте%20файл%20книги!"
                 );
             }
 
             //Загрузка файлов не более 20M -- php.ini
 
-            if (!empty($url)) {
+            if (!empty($newFileName)) {
                 $error = false;
-                $uploadDir = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR;
+                $uploadDir = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . self::UPLOAD_DIR;
                 if (!in_array($extension, self::ALLOWED_EXTENSIONS)) {
                     $error = true;
                 } else if ($file->getError() !== UPLOAD_ERR_OK) {
                     $error = true;
-                } else if (file_exists($uploadDir . $url)) {
+                } else if (file_exists($uploadDir . $newFileName)) {
                     $error = true;
                 }
 
@@ -276,11 +310,11 @@ class BookController extends AbstractController {
                     );
                 }
 
-                $book->setUrl($url);
+                $book->setUrl($newFileName);
             }
 
-            if (!empty($url)) {
-                $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . self::UPLOAD_DIR . $url;
+            if (!empty($newFileName)) {
+                $uploadFileName = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . self::UPLOAD_DIR . $newFileName;
                 $moveResult = move_uploaded_file($file->getPathname(), $uploadFileName);
                 if (!$moveResult) {
                     return new RedirectResponse(
@@ -292,24 +326,36 @@ class BookController extends AbstractController {
             $page = $request->get('page');
             $year = $request->get('year');
             $authorId = $request->get('name_author');
-            $cityId = $request->get('city');
-            $phId = $request->get('ph');
-            $phTypeId = $request->get('type_ph');
-            $categoryId = $request->get('category');
 
             $book->setTitle($title);
             $book->setDescription($description);
             $book->setPage($page);
             $book->setYear($year);
-            $book->setAuthor($authorId);
-            $book->setCity($cityId);
-            $book->setPublishingHouse($phId);
-            $book->setTypePh($phTypeId);
-            $book->setParent($categoryId);
 
-            $result = $this->getDoctrine()->getRepository(Books::class)->addBook($book);
+            $authors = $this->authorRepository->findBy(['idAuthor' => $authorId]);
+            $book->setAuthor($authors);
 
-            if (!$result) {
+            $phId = $request->get('ph');
+            $phs = $this->publishingHouseRepository->findBy(['idPublishingHouse' => $phId]);
+            $book->setPublishingHouse($phs);
+
+            $cityId = $request->get('city');
+            $city = $this->cityRepository->find($cityId);
+            $book->setCity($city);
+
+            $phTypeId = $request->get('type_ph');
+            $phType = $this->phTypesRepository->find($phTypeId);
+            $book->setTypePh($phType);
+
+            $categoryId = $request->get('category');
+            $category = $this->categoryRepository->find($categoryId);
+            $book->setParent($category);
+
+            try {
+                $em = $doctrine->getManager();
+                $em->persist($book);
+                $em->flush();
+            } catch (Exception) {
                 return new RedirectResponse(
                     "/book/add?errorMessage=Не%20удалось%20добавить%20книгу"
                 );
@@ -503,7 +549,8 @@ class BookController extends AbstractController {
         }
         $notFoundMessage = 'В список избранных книг ничего не добавлено!';
 
-        $favoriteBooks = $this->getDoctrine()->getRepository(FavoriteBook::class)->getUserEntries($user['id_users']);
+
+        $favoriteBooks = $this->favoriteBooksRepository->findBy(['userId' => $user['id_users']]);
 
         if (empty($favoriteBooks)) {
             return $this->render(
@@ -515,7 +562,6 @@ class BookController extends AbstractController {
             );
         }
 
-        /** @var FavoriteBook $entry */
         $favoriteBooks = array_map(function ($entry) {
             return $entry->getBookId();
         }, $favoriteBooks);
@@ -525,12 +571,10 @@ class BookController extends AbstractController {
             $page = 1;
         }
 
-        $booksRepository = $this->getDoctrine()->getRepository(Books::class);
-
-        $booksCount = $booksRepository->getUserFavoriteBooksCount($user['id_users']);
+        $criteria = ['idBooks' => $favoriteBooks];
+        $booksCount = $this->booksRepository->count($criteria);
         $pagination = new Pagination($page, $booksCount, self::BOOKS_PER_PAGE);
-
-        $books = $booksRepository->getUserFavoriteBooks($user['id_users'], $pagination->getLimit(), $pagination->getOffset());
+        $books = $this->booksRepository->findBy($criteria, limit: $pagination->getLimit(), offset: $pagination->getOffset());
 
         $pageNavigation = null;
         if ($booksCount > self::BOOKS_PER_PAGE) {
@@ -553,10 +597,10 @@ class BookController extends AbstractController {
         return $this->render(
             'book/favoritesbooks.html.twig',
             array(
-                'favorite_books' => $favoriteBooks,
                 'books' => $books,
                 'user' => $user,
-                'pagination' => $pageNavigation
+                'pagination' => $pageNavigation,
+                'favoriteBooks' => $favoriteBooks,
             )
         );
     }

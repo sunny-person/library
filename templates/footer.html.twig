@@ -1,0 +1,39 @@
+{% set user = app.session.get('user') %}
+
+<section class="footer">
+
+    <div class="box-container">
+
+        <div class="box">
+            {{ render('/menu/categories') }}
+        </div>
+
+        {% if user is defined and user is not null and user.id_role == 1 %}
+            <div class="box">
+                <h3>Панель управления</h3>
+                <a href="{{ path('add_get') }}">Администрирование: добавление</a>
+                <a href="{{ path('admin_index') }}">Администрирование: редактирование</a>
+            </div>
+        {% endif %}
+
+        <div class="box">
+            <h3>Контактная информация</h3>
+            <a href="tel:+79176401400">
+                <i class="fa fa-phone"></i>
+                +7 (917) 640-14-00
+            </a>
+            <a href="mailto:s.prisyacheva@gmail.com">
+                <i class="fa fa-envelope">
+                </i> s.prisyacheva@gmail.com
+            </a>
+            <a href="https://goo.gl/maps/WLmZcAfWdM7wu7Zg6" target="_blank">
+                <i class="fa fa-map-marker"></i>
+                Россия, Волгоград, ВолГУ, КНЭМ
+            </a>
+        </div>
+
+    </div>
+
+    <p class="credit"> &copy; copyright {{ "now"|date("d.m.Y") }} by <span>Sonya Prisyacheva</span></p>
+
+</section>

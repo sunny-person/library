@@ -5,11 +5,18 @@ namespace App\Repository;
 
 
 use App\Entity\Author;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 
-class AuthorRepository extends EntityRepository {
+class AuthorRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Author::class);
+    }
 
     /**
      * @return Author[]

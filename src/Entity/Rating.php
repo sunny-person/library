@@ -25,7 +25,7 @@ class Rating {
      */
     private ?Users $user;
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Books")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Books", inversedBy="ratings")
      * @ORM\JoinColumn(name="book_id", referencedColumnName="id_books")
      * @Assert\NotNull()
      */

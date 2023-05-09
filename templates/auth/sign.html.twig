@@ -1,26 +1,40 @@
 {% extends 'auth/base.html.twig' %}
 
-{% block title %} Авторизация и регистрация {% endblock %}
+ {% block title %} Авторизация и регистрация {% endblock %}
 
-{% block body %}
+ {% block body %}
+     <div class="form-container">
+         <form>
+             <h3>Авторизация</h3>
 
-    <form>
-        <label for="login">Логин</label>
-        <input id="login" type="text" name="login" placeholder="Введите свой логин" required>
-        <label for="password">Пароль</label>
-        <input id="password" type="password" name="password" placeholder="Введите пароль" required>
-        <button type="submit" class="login-btn">Войти</button>
-        <p>
-            У вас нет аккаунта? - <a href="{{ path('register') }}">зарегистрируйтесь</a>!
-        </p>
+             <div class="form-group row">
+                 <label for="login" class="col-2 col-form-label box">Логин</label>
+                 <div class="col-10">
+                     <input id="login" type="text" name="login" placeholder="Введите свой логин" required
+                            class="form-control box">
+                 </div>
+             </div>
 
-        <p class="msg none"></p>
+             <div class="form-group row">
+                 <label for="password" class="col-2 col-form-label box">Пароль</label>
+                 <div class="col-10">
+                     <input id="password" type="password" name="password" placeholder="Введите пароль" required
+                            class="form-control box">
+                 </div>
+             </div>
 
-    </form>
+             <div class="form-group row">
+                 <div class="g-recaptcha" data-sitekey="6LfiU8klAAAAAAF1JKHwaMkToct_e0yS0LiBg1KK"></div>
+             </div>
 
-{% endblock %}
-
-{% block javascripts %}
-    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{  asset('js/auth.js') }}"></script>
-{% endblock %}
+             <button type="submit" name="submit" class="btn-custom login-btn">Войти</button>
+             <p>У вас нет аккаунта? - <a href="{{ path('register') }}">зарегистрируйтесь</a>!</p>
+             <p class="msg none"></p>
+         </form>
+     </div>
+ {% endblock %}
+ {% block javascripts %}
+     <script src="{{ ('https://www.google.com/recaptcha/api.js?hl=ru') }}" async defer></script>
+     <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+     <script src="{{ asset('js/auth.js') }}"></script>
+ {% endblock %}

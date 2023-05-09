@@ -14,12 +14,14 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Json;
 
-class AccountController extends AbstractController {
+class AccountController extends AbstractController
+{
 
     /** @var SessionInterface $session */
     private $session;
 
-    public function __construct(SessionInterface $session) {
+    public function __construct(SessionInterface $session)
+    {
         $this->session = $session;
     }
 
@@ -28,7 +30,8 @@ class AccountController extends AbstractController {
      * @param Request $request
      * @return Response
      */
-    public function login(Request $request) : Response {
+    public function login(Request $request): Response
+    {
         $user = $this->session->get('user');
         if (isset($user)) {
             return new RedirectResponse('/');
@@ -40,28 +43,26 @@ class AccountController extends AbstractController {
             );
         }
 
-        $error_fields = array();
+        $error_fields = [];
 
         $login = $request->get('login');
         $password = $request->get('password');
+        $captcha = $request->get('recaptcha_response');
 
-        if(empty($login))
-        {
+        if (empty($login)) {
             $error_fields[] = 'login';
         }
-        if(empty($password))
-        {
+        if (empty($password)) {
             $error_fields[] = 'password';
         }
 
-        if (!empty($error_fields))
-        {
-            $response = array(
+        if (!empty($error_fields)) {
+            $response = [
                 "status" => false,
                 "type" => 1,
                 "message" => "Проверьте правильность полей",
-                "fields" => $error_fields
-            );
+                "fields" => $error_fields,
+            ];
 
             return new JsonResponse($response);
         }
@@ -70,27 +71,43 @@ class AccountController extends AbstractController {
         /** @var null|Users $user */
         $user = $this->getDoctrine()->getRepository(Users::class)->getUser($login, $password);
 
-        if (!isset($user)) {
-            $response = array(
-                "status"=>false,
-                "message" => 'Неверный логин или пароль'
-            );
+        if (!isset($user) || $user->getLogin() != $login) {
+            $response = [
+                "status" => false,
+                "message" => 'Неверный логин или пароль',
+            ];
 
             return new JsonResponse(
                 $response
             );
         }
 
-        $this->session->set('user', array( //массив сессии данных о пользователе
+        if (!empty($captcha)) {
+            $secretKey = '6LfiU8klAAAAAA_D6oqVF6Sn0MY-uwnzDQaAtLPR';
+            $reCaptchaValidationUrl = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$captcha&remoteip=" . $_SERVER['REMOTE_ADDR'] . "");
+            $result = json_decode($reCaptchaValidationUrl, true);
+        }
+
+        if (!$result['success']) {
+            $response = [
+                "status" => false,
+                "message" => 'Код капчи не прошёл проверку на сервере!',
+            ];
+
+            return new JsonResponse($response);
+        }
+
+        $this->session->set('user', [ //массив сессии данных о пользователе
             "id_users" => $user->getIdUsers(),
             "full_name" => $user->getFullName(),
             "email" => $user->getEmail(),
-            "id_role" => $user->getIdRole()
-        ));
+            "id_role" => $user->getIdRole(),
+        ]);
 
-        $response = array(
-            "status"=>true
-        );
+        $response = [
+            "status" => true,
+        ];
+
         return new JsonResponse($response);
     }
 
@@ -99,7 +116,8 @@ class AccountController extends AbstractController {
      * @param Request $request
      * @return Response
      */
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $user = $this->session->get('user');
         if (isset($user)) {
             return new RedirectResponse('/');
@@ -111,50 +129,61 @@ class AccountController extends AbstractController {
             );
         }
 
-        $error_fields = array();
+        $error_fields = [];
         $fullName = $request->get('full_name');
         $email = $request->get('email');
         $login = $request->get('login');
         $password = $request->get('password');
         $passwordConfirm = $request->get('password_confirm');
+        $captcha = $request->get('recaptcha_response');
 
-        if(empty($login))
-        {
+        if (empty($login)) {
             $error_fields[] = 'login';
         }
-        if(empty($password))
-        {
+        if (empty($password)) {
             $error_fields[] = 'password';
         }
-        if(empty($fullName))
-        {
+        if (empty($fullName) || !preg_match("/^[а-яА-Яa-zA-Z]+$/u", $fullName)) {
             $error_fields[] = 'full_name';
         }
-        if(empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL))
-        {
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error_fields[] = 'email';
         }
-        if(empty($passwordConfirm))
-        {
+        if (empty($passwordConfirm)) {
             $error_fields[] = 'password_confirm';
         }
 
         if (!empty($error_fields)) {
-            $response = array(
+            $response = [
                 "status" => false,
                 "type" => 1,
                 "message" => "Проверьте правильность полей",
-                "fields" => $error_fields
-            );
+                "fields" => $error_fields,
+            ];
 
             return new JsonResponse($response);
         }
 
         if ($password !== $passwordConfirm) {
-            $response = array(
+            $response = [
                 "status" => false,
-                "message" => "Пароли не совпадают"
-            );
+                "message" => "Пароли не совпадают",
+            ];
+
+            return new JsonResponse($response);
+        }
+
+        if (!empty($captcha)) {
+            $secretKey = '6LfiU8klAAAAAA_D6oqVF6Sn0MY-uwnzDQaAtLPR';
+            $reCaptchaValidationUrl = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$captcha&remoteip=" . $_SERVER['REMOTE_ADDR'] . "");
+            $result = json_decode($reCaptchaValidationUrl, true);
+        }
+
+        if (!$result['success']) {
+            $response = [
+                "status" => false,
+                "message" => 'Код капчи не прошёл проверку на сервере!',
+            ];
 
             return new JsonResponse($response);
         }
@@ -164,27 +193,29 @@ class AccountController extends AbstractController {
         $result = $this->getDoctrine()->getRepository(Users::class)->addUser($fullName, $login, $email, $password);
 
         if (!$result) {
-            $response = array(
-                "status"=>false,
-                "message" => 'Проверьте правильность полей'
-            );
+            $response = [
+                "status" => false,
+                "message" => 'Проверьте правильность полей',
+            ];
 
             return new JsonResponse(
                 $response
             );
         }
 
-        $response = array(
-            "status"=>true,
-            "message" => "Регистрация прошла успешно"
-        );
+        $response = [
+            "status" => true,
+            "message" => "Регистрация прошла успешно",
+        ];
+
         return new JsonResponse($response);
     }
 
     /**
      * @Route("/auth/logout", name="logout")
      */
-    public function logout() {
+    public function logout()
+    {
         $userId = $this->session->get('user');
         if (isset($userId)) {
             $this->session->remove('user');

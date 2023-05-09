@@ -1,28 +1,26 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-    <div class="pageAdd">
-        <h2>Отзыв на книгу "{{ book.title }}"</h2>
-        <div class="tab-wrapper">
-            <div class="tab-content">
+    <section class="reviews">
+        <h2 class="title">Редактирование отзыва на книгу "{{ book.title }}"</h2>
+        <div class="box-container">
+            <div class="box">
                 <div>
                     {{ form_start(form) }}
-                    <div class="form-group">
-                        {{ form_label(form.comment) }}
-                        <br>
+                    <p class="card-header">{{ form_label(form.comment) }}</p>
+                    <p class="card-text">
                         {{ form_widget(form.comment, {'attr': {'class': 'form-control', 'rows': '10'}}) }}
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.value) }}
-                        <br>
+                    </p>
+                    <p class="card-header">{{ form_label(form.value) }}</p>
+                    <p class="card-text">
                         {{ form_widget(form.value, {'attr': {'class': 'form-control'}}) }}
-                    </div>
-                    {{ form_widget(form.save, {'attr': {'class': 'button buttonBlue'}}) }}
+                    </p>
+                    {{ form_widget(form.save, {'attr': {'class': 'button delete-btn-custom'}}) }}
                     {{ form_end(form) }}
                 </div>
+                <p align="left"><a href="{{ path('rating_list', {'bookId': book.idBooks}) }}">
+                        &#8678; Вернуться в список отзывов</a></p>
             </div>
-            <a href="{{ path('rating_list', {'bookId': book.idBooks}) }}">
-                &#8678; список отзывов</a>
         </div>
-    </div>
+    </section>
 {% endblock %}

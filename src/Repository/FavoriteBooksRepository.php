@@ -5,9 +5,16 @@ namespace App\Repository;
 
 
 use App\Entity\FavoriteBook;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class FavoriteBooksRepository extends EntityRepository {
+class FavoriteBooksRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, FavoriteBook::class);
+    }
 
     public function addEntry(FavoriteBook $fb): bool {
         $query = 'INSERT INTO favorite_book SET user_id = :u, book_id = :b';
@@ -45,7 +52,6 @@ class FavoriteBooksRepository extends EntityRepository {
         $entries = array();
         foreach ($dbEntries as $dbEntry) {
             $fb = new FavoriteBook();
-            $fb->setId($dbEntry['id']);
             $fb->setUserId($dbEntry['user_id']);
             $fb->setBookId($dbEntry['book_id']);
 
