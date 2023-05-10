@@ -163,6 +163,22 @@ function go() {
         //общее количество страниц в документе
         document.querySelector('#page_count').textContent = myState.pdf.numPages;
         document.getElementById('current_page').value = myState.currentPage;
+
+        function onReady(callback) {
+            var intervalID = window.setInterval(checkReady, 100);
+            function checkReady() {
+                if (document.getElementsByTagName('canvas')[0] !== undefined) {
+                    window.clearInterval(intervalID);
+                    callback.call(this);
+                }
+            }
+        }
+
+        onReady(function () {
+            document.getElementsByClassName('reader')[0].style.display = 'block';
+            document.getElementsByClassName('loading')[0].style.display = 'none';
+        });
+
         await render();
     });
 }

@@ -152,4 +152,19 @@ async function go() {
     djvuState.djvu = new DjVu.Document(bookContent);
     document.querySelector('#page_count').textContent = String(djvuState.djvu.getPagesQuantity());
     await render();
+
+    function onReady(callback) {
+        var intervalID = window.setInterval(checkReady, 100);
+        function checkReady() {
+            if (document.getElementsByTagName('canvas')[0] !== undefined) {
+                window.clearInterval(intervalID);
+                callback.call(this);
+            }
+        }
+    }
+
+    onReady(function () {
+        document.getElementsByClassName('reader')[0].style.display = 'block';
+        document.getElementsByClassName('loading')[0].style.display = 'none';
+    });
 }

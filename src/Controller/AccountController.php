@@ -83,7 +83,7 @@ class AccountController extends AbstractController
         }
 
         if (!empty($captcha)) {
-            $secretKey = '6LfiU8klAAAAAA_D6oqVF6Sn0MY-uwnzDQaAtLPR';
+            $secretKey = '';
             $reCaptchaValidationUrl = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$captcha&remoteip=" . $_SERVER['REMOTE_ADDR'] . "");
             $result = json_decode($reCaptchaValidationUrl, true);
         }
@@ -174,7 +174,7 @@ class AccountController extends AbstractController
         }
 
         if (!empty($captcha)) {
-            $secretKey = '6LfiU8klAAAAAA_D6oqVF6Sn0MY-uwnzDQaAtLPR';
+            $secretKey = '';
             $reCaptchaValidationUrl = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$captcha&remoteip=" . $_SERVER['REMOTE_ADDR'] . "");
             $result = json_decode($reCaptchaValidationUrl, true);
         }
